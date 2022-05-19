@@ -1,22 +1,42 @@
-package com.ooka.uebung5;
+package com.ooka.test;
 
+import com.ooka.test2.City;
+import com.ooka.test2.CityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
-public class Uebung5Application {
+@EnableJpaRepositories(basePackages = {"com.ooka.*"})
+@ComponentScan(basePackages = {"com.ooka.*"})
+@EntityScan("com.ooka.*")
+public class TestApplication {
 
     public static void main(String[] args) {
-        ConfigurableApplicationContext applicationContext = SpringApplication.run(Uebung5Application.class, args);
+        ConfigurableApplicationContext applicationContext = SpringApplication.run(TestApplication.class, args);
+        City berlin = new City();
+        berlin.setName("Berlin");
+        berlin.setCapital(true);
+
+        City cologne = new City();
+        cologne.setName("Cologne");
+        cologne.setCapital(false);
+
+        CityRepository cityRepository = applicationContext.getBean(CityRepository.class);
+        cityRepository.save(berlin);
+        cityRepository.save(cologne);
+        System.out.println("Hi!");
     }
 
     public interface SaySomethingService {
