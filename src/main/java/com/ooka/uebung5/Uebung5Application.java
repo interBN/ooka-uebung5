@@ -35,6 +35,10 @@ public class Uebung5Application {
         }
     }
 
+    /**
+     * A
+     */
+
     @Component
     @Qualifier("sayHelloService")
     public class SayHelloService implements SaySomethingService {
@@ -43,6 +47,10 @@ public class Uebung5Application {
             return "Hello!";
         }
     }
+
+    /**
+     * B
+     */
 
     @Configuration
     public class SaySomethingConfiguration {
