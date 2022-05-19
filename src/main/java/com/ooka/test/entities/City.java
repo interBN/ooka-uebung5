@@ -1,4 +1,4 @@
-package com.ooka.test2;
+package com.ooka.test.entities;
 
 import javax.persistence.*;
 
