@@ -2,9 +2,6 @@
 
 Based on: https://youtu.be/FdXDtLJgS9w
 
-IDEA and DB:
-https://www.youtube.com/watch?v=YRaHpCB8caw
-
 ## Setup
 
 - Install Docker on your system: https://www.docker.com/get-started/
@@ -17,4 +14,4 @@ https://www.youtube.com/watch?v=YRaHpCB8caw
 docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -p 5432:5432 -d postgres
 ```
 
-- Install DBeaver: https://dbeaver.io/download/
+- Configure Database in Idea: https://www.youtube.com/watch?v=YRaHpCB8caw
