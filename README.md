@@ -2,6 +2,9 @@
 
 Based on: https://youtu.be/FdXDtLJgS9w
 
+IDEA and DB:
+https://www.youtube.com/watch?v=YRaHpCB8caw
+
 ## Setup
 
 - Install Docker on your system: https://www.docker.com/get-started/
