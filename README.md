@@ -14,4 +14,10 @@ Based on: https://youtu.be/FdXDtLJgS9w
 docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -p 5432:5432 -d postgres
 ```
 
+Stop Postgres:
+
+```
+docker stop some-postgres
+```
+
 - Configure Database in Idea: https://www.youtube.com/watch?v=YRaHpCB8caw
