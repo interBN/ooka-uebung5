@@ -6,6 +6,12 @@ Based on: https://youtu.be/FdXDtLJgS9w
 
 - Install Docker on your system: https://www.docker.com/get-started/
 
+- Install Postman: https://www.postman.com/downloads/
+
+- Configure Database in Idea Ultimate: https://www.youtube.com/watch?v=YRaHpCB8caw
+
+## DB
+
 - Pull Postgres: https://hub.docker.com/_/postgres
 
 - Run Postgres using Docker:
@@ -20,4 +26,3 @@ Stop Postgres:
 docker stop some-postgres
 ```
 
-- Configure Database in Idea: https://www.youtube.com/watch?v=YRaHpCB8caw
