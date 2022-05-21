@@ -1,8 +1,8 @@
-package com.ooka.test.entities;
+package com.ooka.test.products;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CityRepository extends CrudRepository<City, Long> {
+public interface ProductRepository extends CrudRepository<Product, Long> {
 }
