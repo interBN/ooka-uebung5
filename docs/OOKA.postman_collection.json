@@ -51,10 +51,10 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"Schuhe\",\r\n    \"costInEuro\": 23\r\n}"
+					"raw": ""
 				},
 				"url": {
-					"raw": "http://localhost:8080/products/",
+					"raw": "http://localhost:8080/products/3",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -62,7 +62,40 @@
 					"port": "8080",
 					"path": [
 						"products",
-						""
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET All products",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/products/getAll",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"products",
+						"getAll"
 					]
 				}
 			},
@@ -109,10 +142,6 @@
 						"type": "default"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "http://localhost:8080/products/3",
 					"protocol": "http",
