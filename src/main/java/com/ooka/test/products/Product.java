@@ -1,9 +1,6 @@
 package com.ooka.test.products;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "product")
@@ -12,6 +9,7 @@ public class Product {
     @Id
     @GeneratedValue
     private Long id;
+    @Column(unique = true)
     private String name;
     private int costInEuro;
 

@@ -5,7 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/products")
@@ -25,6 +27,15 @@ public class ProductController {
             return product.get();
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product with " + productId + " not found");
+    }
+
+    @GetMapping("/getAll")
+    public List<Product> readPAllroduct() {
+        Iterable<Product> product = productRepository.findAll();
+        if (StreamSupport.stream(product.spliterator(), false).count() == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Products found");
+        }
+        return (List<Product>) product;
     }
 
     @PutMapping("/{productId}")
