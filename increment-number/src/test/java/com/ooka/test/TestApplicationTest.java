@@ -1,7 +1,7 @@
 package com.ooka.test;
 
-import com.ooka.test.products.Product;
-import com.ooka.test.products.ProductRepository;
+import com.ooka.test.numbers.Number;
+import com.ooka.test.numbers.NumberRepository;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,29 +18,27 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class TestApplicationTest {
 
-    private static final String productName = "Test Produkt";
     @Autowired
-    private ProductRepository productRepository;
+    private NumberRepository numberRepository;
 
     @Before
     public void setUp() {
-        Product product = new Product();
-        product.setName("Test Produkt");
-        product.setCostInEuro(200);
-        productRepository.save(product);
+        Number number = new Number();
+        number.setValue(200);
+        numberRepository.save(number);
     }
 
     @After
     public void tearDown() {
-        productRepository.deleteAll();
+        numberRepository.deleteAll();
     }
 
     @Test
     public void testGetProduct() {
         TestRestTemplate testRestTemplate = new TestRestTemplate();
-        ResponseEntity<Product> productEntity = testRestTemplate.getForEntity("http://localhost:8080/products/1", Product.class);
+        ResponseEntity<Number> productEntity = testRestTemplate.getForEntity("http://localhost:8090/products/1", Number.class);
         Assert.assertNotNull(productEntity.getBody());
         Assert.assertEquals(HttpStatus.OK, productEntity.getStatusCode());
-        Assert.assertEquals(productEntity.getBody().getName(), productName);
+        Assert.assertEquals(productEntity.getBody().getValue(), 200);
     }
 }
