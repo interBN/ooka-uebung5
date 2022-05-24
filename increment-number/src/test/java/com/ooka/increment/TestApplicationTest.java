@@ -1,7 +1,7 @@
-package com.ooka.test;
+package com.ooka.increment;
 
-import com.ooka.test.numbers.Number;
-import com.ooka.test.numbers.NumberRepository;
+import com.ooka.increment.numbers.Number;
+import com.ooka.increment.numbers.NumberRepository;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,7 +36,7 @@ public class TestApplicationTest {
     @Test
     public void testGetProduct() {
         TestRestTemplate testRestTemplate = new TestRestTemplate();
-        ResponseEntity<Number> productEntity = testRestTemplate.getForEntity("http://localhost:8090/products/1", Number.class);
+        ResponseEntity<Number> productEntity = testRestTemplate.getForEntity("http://localhost:8090/numbers/1", Number.class);
         Assert.assertNotNull(productEntity.getBody());
         Assert.assertEquals(HttpStatus.OK, productEntity.getStatusCode());
         Assert.assertEquals(productEntity.getBody().getValue(), 200);

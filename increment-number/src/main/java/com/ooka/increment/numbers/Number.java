@@ -1,4 +1,4 @@
-package com.ooka.test.numbers;
+package com.ooka.increment.numbers;
 
 import javax.persistence.*;
 

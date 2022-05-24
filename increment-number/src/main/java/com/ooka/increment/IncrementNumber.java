@@ -1,7 +1,7 @@
-package com.ooka.test;
+package com.ooka.increment;
 
-import com.ooka.test.numbers.Number;
-import com.ooka.test.numbers.NumberRepository;
+import com.ooka.increment.numbers.Number;
+import com.ooka.increment.numbers.NumberRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;

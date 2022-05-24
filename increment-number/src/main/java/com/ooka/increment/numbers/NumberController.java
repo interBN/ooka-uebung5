@@ -1,4 +1,4 @@
-package com.ooka.test.numbers;
+package com.ooka.increment.numbers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
