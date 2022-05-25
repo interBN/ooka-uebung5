@@ -102,13 +102,7 @@ public class TestApplication {
         if (allEntries.hasBody()) {
             NumberEntity[] body = allEntries.getBody();
             assert body != null;
-            Long max = 0L;
-            for (NumberEntity e : body) {
-                if (e.getId() > max) {
-                    max = e.getId();
-                }
-            }
-            id = max;
+            return body[body.length - 1].getId();
         }
         return id;
     }

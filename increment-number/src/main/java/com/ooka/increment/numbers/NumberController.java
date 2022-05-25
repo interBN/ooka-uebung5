@@ -1,6 +1,7 @@
 package com.ooka.increment.numbers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -32,7 +33,7 @@ public class NumberController {
 
     @GetMapping("/getAll")
     public List<NumberEntity> readAllNumbers() {
-        Iterable<NumberEntity> number = numberRepository.findAll();
+        Iterable<NumberEntity> number = numberRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
         if (StreamSupport.stream(number.spliterator(), false).count() == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Numbers found");
         }
