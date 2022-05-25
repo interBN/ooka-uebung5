@@ -17,13 +17,13 @@ public class NumberController {
     NumberRepository numberRepository;
 
     @PostMapping("")
-    public void createNumber(@RequestBody Number number){
+    public void createNumber(@RequestBody NumberEntity number) {
         numberRepository.save(number);
     }
 
     @GetMapping("/{numberId}")
-    public Number readNumber(@PathVariable Long numberId) {
-        Optional<Number> number = numberRepository.findById(numberId);
+    public NumberEntity readNumber(@PathVariable Long numberId) {
+        Optional<NumberEntity> number = numberRepository.findById(numberId);
         if (number.isPresent()) {
             return number.get();
         }
@@ -31,28 +31,28 @@ public class NumberController {
     }
 
     @GetMapping("/getAll")
-    public List<Number> readAllNumbers() {
-        Iterable<Number> number = numberRepository.findAll();
+    public List<NumberEntity> readAllNumbers() {
+        Iterable<NumberEntity> number = numberRepository.findAll();
         if (StreamSupport.stream(number.spliterator(), false).count() == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No Numbers found");
         }
-        return (List<Number>) number;
+        return (List<NumberEntity>) number;
     }
 
     @PutMapping("/{numberId}")
-    public void updateNumber(@PathVariable Long numberId, @RequestBody Number numberUpdate) {
-        Optional<Number> number = numberRepository.findById(numberId);
+    public void updateNumber(@PathVariable Long numberId, @RequestBody NumberEntity numberUpdate) {
+        Optional<NumberEntity> number = numberRepository.findById(numberId);
         if (number.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Number with " + numberId + " not found");
         }
-        Number numberInstance = number.get();
+        NumberEntity numberInstance = number.get();
         numberInstance.setValue(numberUpdate.getValue());
         numberRepository.save(numberInstance);
     }
 
     @DeleteMapping("/{numberId}")
     public void deleteProduct(@PathVariable Long numberId) {
-        Optional<Number> number = numberRepository.findById(numberId);
+        Optional<NumberEntity> number = numberRepository.findById(numberId);
         if (number.isPresent()) {
             numberRepository.delete(number.get());
             return;

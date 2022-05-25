@@ -1,6 +1,6 @@
 package com.ooka.increment;
 
-import com.ooka.increment.numbers.Number;
+import com.ooka.increment.numbers.NumberEntity;
 import com.ooka.increment.numbers.NumberRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -28,20 +28,19 @@ public class IncrementNumber {
 //        cityRepository.save(berlin);
 //        cityRepository.save(cologne);
         NumberRepository numberRepository = applicationContext.getBean(NumberRepository.class);
-        Number counter = new Number();
+        NumberEntity counter = new NumberEntity();
         counter.setValue(0);
         numberRepository.save(counter);
         long id = counter.getId();
-        while(applicationContext.isActive()){
+        while (applicationContext.isActive()) {
             try {
                 Thread.sleep(1000);
-                if(numberRepository.existsById(id)) {
+                if (numberRepository.existsById(id)) {
                     counter = numberRepository.findById(id).get();
                     counter.setValue(counter.getValue() + 1);
                     numberRepository.save(counter);
                     System.out.println(counter.getValue());
-                }
-                else{
+                } else {
                     System.out.println("No number present");
                 }
             } catch (InterruptedException e) {

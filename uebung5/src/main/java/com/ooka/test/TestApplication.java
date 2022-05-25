@@ -1,6 +1,6 @@
 package com.ooka.test;
 
-import com.ooka.increment.numbers.Number;
+import com.ooka.increment.numbers.NumberEntity;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -32,11 +32,12 @@ public class TestApplication {
             try {
                 Thread.sleep(1000);
                 RestTemplate restTemplate = new RestTemplate();
-                ResponseEntity<Number> numberEntity = restTemplate.getForEntity("http://localhost:8090/numbers/1", Number.class);
-                if (numberEntity.hasBody()){
-                    System.out.println(numberEntity.getBody().getValue());
+                ResponseEntity<NumberEntity> numberEntity = restTemplate.getForEntity("http://localhost:8090/numbers/1", NumberEntity.class);
+                if (numberEntity.hasBody()) {
+                    NumberEntity body = numberEntity.getBody();
+                    System.out.println(body.getValue());
                 }
-            } catch (Exception e){
+            } catch (Exception e) {
                 break;
             }
 

@@ -1,17 +1,19 @@
 package com.ooka.increment.numbers;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "number")
-public class Number {
+public class NumberEntity {
 
     @Id
     @GeneratedValue
     private long id;
 
     private int value;
-
 
     public Long getId() {
         return id;
@@ -21,11 +23,11 @@ public class Number {
         this.id = id;
     }
 
-    public int getValue(){
+    public int getValue() {
         return value;
     }
 
-    public void setValue(int value){
+    public void setValue(int value) {
         this.value = value;
     }
 }

@@ -1,6 +1,6 @@
 package com.ooka.increment;
 
-import com.ooka.increment.numbers.Number;
+import com.ooka.increment.numbers.NumberEntity;
 import com.ooka.increment.numbers.NumberRepository;
 import org.junit.After;
 import org.junit.Assert;
@@ -23,7 +23,7 @@ public class TestApplicationTest {
 
     @Before
     public void setUp() {
-        Number number = new Number();
+        NumberEntity number = new NumberEntity();
         number.setValue(200);
         numberRepository.save(number);
     }
@@ -36,7 +36,7 @@ public class TestApplicationTest {
     @Test
     public void testGetProduct() {
         TestRestTemplate testRestTemplate = new TestRestTemplate();
-        ResponseEntity<Number> productEntity = testRestTemplate.getForEntity("http://localhost:8090/numbers/1", Number.class);
+        ResponseEntity<NumberEntity> productEntity = testRestTemplate.getForEntity("http://localhost:8090/numbers/1", NumberEntity.class);
         Assert.assertNotNull(productEntity.getBody());
         Assert.assertEquals(HttpStatus.OK, productEntity.getStatusCode());
         Assert.assertEquals(productEntity.getBody().getValue(), 200);
