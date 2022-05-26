@@ -1,4 +1,4 @@
-package com.ooka.analysis.algorithm_a;
+package com.ooka.cli.log;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;

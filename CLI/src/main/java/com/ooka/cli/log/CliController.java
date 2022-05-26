@@ -1,4 +1,4 @@
-package com.ooka.analysis.algorithm_a;
+package com.ooka.cli.log;
 
 import com.ooka.analysis.State;
 import com.ooka.analysis.product.Product;

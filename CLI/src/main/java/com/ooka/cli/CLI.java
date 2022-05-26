@@ -1,7 +1,7 @@
-package com.ooka.analysis;
+package com.ooka.cli;
 
-import com.ooka.analysis.algorithm_a.CliEntity;
-import com.ooka.analysis.algorithm_a.CliRepository;
+import com.ooka.cli.log.CliEntity;
+import com.ooka.cli.log.CliRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
