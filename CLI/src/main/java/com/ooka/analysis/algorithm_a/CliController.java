@@ -11,10 +11,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/cli")
-public class AlgorithmAController {
+public class CliController {
 
     @Autowired
-    AlgorithmARepository algorithmARepository;
+    CliRepository cliRepository;
 
     private State state = State.IDLE;
 
@@ -30,7 +30,7 @@ public class AlgorithmAController {
             state = State.RUNNING;
             int analysisTime = 5000;
 //                    ThreadLocalRandom.current().nextInt(100, 10000);
-            AlgorithmAEntity alg = new AlgorithmAEntity();
+            CliEntity alg = new CliEntity();
             try {
                 Thread.sleep(analysisTime);
                 state = State.SUCCEEDED;
@@ -39,13 +39,13 @@ public class AlgorithmAController {
                 state = State.FAILED;
                 alg.setLog("Analysis failed.");
             }
-            algorithmARepository.save(alg);
+            cliRepository.save(alg);
         }
     }
 
     @GetMapping("/{algorithmAId}")
     public String readLog(@PathVariable Long algorithmAId) {
-        Optional<AlgorithmAEntity> algorithmA = algorithmARepository.findById(algorithmAId);
+        Optional<CliEntity> algorithmA = cliRepository.findById(algorithmAId);
         if (algorithmA.isPresent()) {
             return algorithmA.get().getLog();
         }
@@ -59,9 +59,9 @@ public class AlgorithmAController {
 
     @DeleteMapping("/{algorithmAId}")
     public void deleteLog(@PathVariable Long algorithmAId) {
-        Optional<AlgorithmAEntity> algorithmA = algorithmARepository.findById(algorithmAId);
+        Optional<CliEntity> algorithmA = cliRepository.findById(algorithmAId);
         if (algorithmA.isPresent()) {
-            algorithmARepository.delete(algorithmA.get());
+            cliRepository.delete(algorithmA.get());
             return;
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Log with " + algorithmAId + " not found");
