@@ -1,16 +1,17 @@
 package com.ooka.analysis.algorithm_a;
 
 import com.ooka.analysis.State;
-import com.ooka.analysis.product.Product;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/cli")
+@RequestMapping("/algorithmA")
 public class AlgorithmAController {
 
     @Autowired
@@ -19,14 +20,12 @@ public class AlgorithmAController {
     private State state = State.IDLE;
 
     @PutMapping("")
-    public void runAlgorithm(@RequestBody Product product) {
-        new Thread(() -> {
-            run(product);
-        }).start();
+    public void runAlgorithm() {
+        new Thread(this::run).start();
     }
 
-    private void run(Product product) {
-        if (state == State.IDLE) {
+    private void run() {
+        if (state != State.RUNNING) {
             state = State.RUNNING;
             int analysisTime = 5000;
 //                    ThreadLocalRandom.current().nextInt(100, 10000);
@@ -34,13 +33,27 @@ public class AlgorithmAController {
             try {
                 Thread.sleep(analysisTime);
                 state = State.SUCCEEDED;
-                alg.setLog(product.getStartingSystem() + " succeded. Analysis time: " + analysisTime + "ms");
+                alg.setLog("Succeeded. Analysis time: " + analysisTime + "ms");
             } catch (Exception e) {
                 state = State.FAILED;
                 alg.setLog("Analysis failed.");
             }
             algorithmARepository.save(alg);
         }
+    }
+
+    @GetMapping(value = "result", produces = "application/json")
+    public ResponseEntity<Object> getResult() {
+        JSONObject entity = new JSONObject();
+        HttpStatus status;
+        entity.put("state", state);
+        if (state == State.SUCCEEDED) {
+            entity.put("result", 15635);
+            status = HttpStatus.OK;
+        } else {
+            status = HttpStatus.NO_CONTENT;
+        }
+        return new ResponseEntity<>(entity.toString(), status);
     }
 
     @GetMapping("/{algorithmAId}")
@@ -52,9 +65,12 @@ public class AlgorithmAController {
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Log with " + algorithmAId + " not found");
     }
 
-    @GetMapping("/state")
-    public State getState() {
-        return state;
+    @GetMapping(value = "/state", produces = "application/json")
+    public ResponseEntity<Object> getState() {
+        JSONObject entity = new JSONObject();
+        entity.put("state", state);
+        entity.put("test", "bla");
+        return new ResponseEntity<>(entity.toString(), HttpStatus.OK);
     }
 
     @DeleteMapping("/{algorithmAId}")
