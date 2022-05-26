@@ -32,6 +32,9 @@ public class AlgorithmAController {
             AlgorithmAEntity alg = new AlgorithmAEntity();
             try {
                 Thread.sleep(analysisTime);
+                if (Math.random() < 0.2) {
+                    throw new Exception();
+                }
                 state = State.SUCCEEDED;
                 alg.setLog("Succeeded. Analysis time: " + analysisTime + "ms");
             } catch (Exception e) {
@@ -69,7 +72,6 @@ public class AlgorithmAController {
     public ResponseEntity<Object> getState() {
         JSONObject entity = new JSONObject();
         entity.put("state", state);
-        entity.put("test", "bla");
         return new ResponseEntity<>(entity.toString(), HttpStatus.OK);
     }
 
