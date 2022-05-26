@@ -30,7 +30,7 @@ public class Controller {
         do {
             try {
                 Thread.sleep(1000);
-                System.out.println("Checking for state...");
+                System.out.print("State: ");
                 ResponseEntity<State> stateEntity = restTemplate.getForEntity("http://localhost:8071/algorithmA/state", State.class);
                 stateA = stateEntity.getBody();
                 System.out.println("AlgorithmA is " + stateA);

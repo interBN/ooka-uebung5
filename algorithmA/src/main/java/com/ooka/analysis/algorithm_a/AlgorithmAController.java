@@ -14,10 +14,10 @@ import java.util.concurrent.ThreadLocalRandom;
 @RequestMapping("/algorithmA")
 public class AlgorithmAController {
 
-    private State state = State.IDLE;
-
     @Autowired
     AlgorithmARepository algorithmARepository;
+
+    private State state = State.IDLE;
 
     @PutMapping("")
     public void runAlgorithm(@RequestBody Product product) {
@@ -26,11 +26,12 @@ public class AlgorithmAController {
         }).start();
     }
 
-    private void run(Product product){
+    private void run(Product product) {
         if (state == State.IDLE) {
             state = State.RUNNING;
-            int analysisTime = ThreadLocalRandom.current().nextInt(100, 10000);
-            AlgorithmA alg = new AlgorithmA();
+            int analysisTime = 5000;
+//                    ThreadLocalRandom.current().nextInt(100, 10000);
+            AlgorithmAEntity alg = new AlgorithmAEntity();
             try {
                 Thread.sleep(analysisTime);
                 state = State.SUCCEEDED;
@@ -39,14 +40,13 @@ public class AlgorithmAController {
                 state = State.FAILED;
                 alg.setLog("Analysis failed.");
             }
-
             algorithmARepository.save(alg);
         }
     }
 
     @GetMapping("/{algorithmAId}")
     public String readLog(@PathVariable Long algorithmAId) {
-        Optional<AlgorithmA> algorithmA = algorithmARepository.findById(algorithmAId);
+        Optional<AlgorithmAEntity> algorithmA = algorithmARepository.findById(algorithmAId);
         if (algorithmA.isPresent()) {
             return algorithmA.get().getLog();
         }
@@ -60,7 +60,7 @@ public class AlgorithmAController {
 
     @DeleteMapping("/{algorithmAId}")
     public void deleteLog(@PathVariable Long algorithmAId) {
-        Optional<AlgorithmA> algorithmA = algorithmARepository.findById(algorithmAId);
+        Optional<AlgorithmAEntity> algorithmA = algorithmARepository.findById(algorithmAId);
         if (algorithmA.isPresent()) {
             algorithmARepository.delete(algorithmA.get());
             return;

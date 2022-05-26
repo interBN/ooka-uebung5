@@ -4,5 +4,5 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AlgorithmARepository extends CrudRepository<AlgorithmA, Long> {
+public interface AlgorithmARepository extends CrudRepository<AlgorithmAEntity, Long> {
 }
