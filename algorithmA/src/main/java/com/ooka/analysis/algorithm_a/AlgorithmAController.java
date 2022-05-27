@@ -2,7 +2,6 @@ package com.ooka.analysis.algorithm_a;
 
 import com.ooka.analysis.State;
 import com.ooka.analysis.product.Product;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +36,7 @@ public class AlgorithmAController {
                     throw new Exception();
                 }
                 state = State.SUCCEEDED;
-                alg.setLog("Analysis of "+ product.getStartingSystem() + "Succeeded. Analysis time: " + analysisTime + "ms");
+                alg.setLog("Analysis of " + product.getStartingSystem() + "Succeeded. Analysis time: " + analysisTime + "ms");
             } catch (Exception e) {
                 state = State.FAILED;
                 alg.setLog("Analysis failed.");
@@ -47,17 +46,14 @@ public class AlgorithmAController {
     }
 
     @GetMapping(value = "result", produces = "application/json")
-    public ResponseEntity<Object> getResult() {
-        JSONObject entity = new JSONObject();
+    public ResponseEntity<Integer> getResult() {
         HttpStatus status;
-        entity.put("state", state);
         if (state == State.SUCCEEDED) {
-            entity.put("result", 15635);
             status = HttpStatus.OK;
         } else {
             status = HttpStatus.NO_CONTENT;
         }
-        return new ResponseEntity<>(entity.toString(), status);
+        return new ResponseEntity<>(15635, status);
     }
 
     @GetMapping("/{algorithmAId}")
@@ -70,10 +66,8 @@ public class AlgorithmAController {
     }
 
     @GetMapping(value = "/state", produces = "application/json")
-    public ResponseEntity<Object> getState() {
-        JSONObject entity = new JSONObject();
-        entity.put("state", state);
-        return new ResponseEntity<>(entity.toString(), HttpStatus.OK);
+    public ResponseEntity<State> getState() {
+        return new ResponseEntity<>(state, HttpStatus.OK);
     }
 
     @DeleteMapping("/{algorithmAId}")

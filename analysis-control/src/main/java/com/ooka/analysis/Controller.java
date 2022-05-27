@@ -24,19 +24,31 @@ public class Controller {
         productRepository.save(product);
         System.out.println("Starting AlgorithmA");
         RestTemplate restTemplate = new RestTemplate();
-//        restTemplate.postForObject("http://localhost:8071/algorithmA", product, Product.class);
-        restTemplate.put("http://localhost:8071/algorithmA", product);
-        State stateA = null;
+
+        int resultA = getResult("http://localhost:8071/algorithmA", product, restTemplate);
+        System.out.println("resultA = " + resultA);
+        int resultB = getResult("http://localhost:8073/algorithmB", product, restTemplate);
+        System.out.println("resultB = " + resultB);
+        System.out.println("A+B = " + (resultA + resultB));
+    }
+
+    private static int getResult(String baseUrl, Product product, RestTemplate restTemplate) {
+        restTemplate.put(baseUrl, product);
+        State state = null;
         do {
             try {
                 Thread.sleep(1000);
-                System.out.print("State: ");
-                ResponseEntity<State> stateEntity = restTemplate.getForEntity("http://localhost:8071/algorithmA/state", State.class);
-                stateA = stateEntity.getBody();
-                System.out.println("AlgorithmA is " + stateA);
+                ResponseEntity<State> stateEntity = restTemplate.getForEntity(baseUrl + "/state", State.class);
+                state = stateEntity.getBody();
+                System.out.println(baseUrl + " => State: " + state);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } while (stateA == State.RUNNING);
+        } while (state == State.RUNNING);
+        ResponseEntity<Integer> response = restTemplate.getForEntity(baseUrl + "/result", Integer.class);
+        if (response.hasBody()) {
+            return response.getBody();
+        }
+        return 0;
     }
 }
