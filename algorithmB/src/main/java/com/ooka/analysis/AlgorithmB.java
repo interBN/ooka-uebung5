@@ -13,6 +13,6 @@ public class AlgorithmB {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext applicationContext = SpringApplication.run(AlgorithmB.class, args);
-        System.out.println("AlgorithmA is running.");
+        System.out.println("AlgorithmB is running.");
     }
 }
