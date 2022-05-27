@@ -2,28 +2,39 @@ package com.ooka.analysis;
 
 import com.ooka.analysis.product.Product;
 import com.ooka.analysis.product.ProductRepository;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.StreamSupport;
 
-@SpringBootApplication
-@EnableJpaRepositories(basePackages = {"com.ooka.*"})
-@EntityScan("com.ooka.*")
+@RestController
+@RequestMapping("")
 public class AnalysisController {
+    private State state = State.IDLE;
 
-    public static void main(String[] args) throws Exception {
+    @GetMapping(value = "/state", produces = "application/json")
+    public ResponseEntity<State> getState() {
+        return new ResponseEntity<>(state, HttpStatus.OK);
+    }
+
+
+    @PutMapping("/run")
+    public void runController(){
+        new Thread(this::run).start();
+    }
+
+    private void run(){
 
         long start = new Date().getTime();
+        RestTemplate restTemplate = new RestTemplate();
 
-        ConfigurableApplicationContext applicationContext = SpringApplication.run(AnalysisController.class, args);
-        System.out.println("Controller is running");
-        ProductRepository productRepository = applicationContext.getBean(ProductRepository.class);
         Product product = new Product();
         product.setStartingSystem("testStartingSystem");
         product.setAuxiliaryPTO("A");
@@ -37,16 +48,25 @@ public class AnalysisController {
         product.setPowerTransmission("I");
         product.setGearbox("J");
         product.setMountingSystem("K");
-        productRepository.save(product);
+        restTemplate.postForObject("http://localhost:8070/products", product, Product.class);
 
         System.out.println("Starting AlgorithmA");
-        RestTemplate restTemplate = new RestTemplate();
+        int resultA = -1;
+        try {
+            resultA = getResult("http://localhost:8071/algorithmA", product, restTemplate);
+            System.out.println("resultA = " + resultA);
+        } catch (Exception e){
+            System.out.println("Error while performing AlgorithmA");
+        }
 
-        int resultA = getResult("http://localhost:8071/algorithmA", product, restTemplate);
-        System.out.println("resultA = " + resultA);
-
-        int resultB = getResult("http://localhost:8073/algorithmB", product, restTemplate);
-        System.out.println("resultB = " + resultB);
+        System.out.println("Starting AlgorithmB");
+        int resultB = -1;
+        try {
+            resultB = getResult("http://localhost:8073/algorithmB", product, restTemplate);
+            System.out.println("resultB = " + resultB);
+        } catch (Exception e){
+            System.out.println("Error while performing AlgorithmB");
+        }
 
         int result = resultA + resultB;
         System.out.println("A+B = " + result);
@@ -55,14 +75,13 @@ public class AnalysisController {
         System.out.println("Duration = " + ((end - start) / 1000) + " sec");
 
         product.setResult(result);
-        productRepository.save(product);
+        restTemplate.postForObject("http://localhost:8070/products", product, Product.class);
     }
-
-    private static int getResult(String baseUrl, Product product, RestTemplate restTemplate) throws Exception {
+    private int getResult(String baseUrl, Product product, RestTemplate restTemplate) throws Exception {
         return getResult(baseUrl, product, restTemplate, 0);
     }
 
-    private static int getResult(String baseUrl, Product product, RestTemplate restTemplate, int errorCounter) throws Exception {
+    private int getResult(String baseUrl, Product product, RestTemplate restTemplate, int errorCounter) throws Exception {
         if (errorCounter > 5) {
             throw new Exception("Retry > 5");
         }
