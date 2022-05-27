@@ -1,6 +1,7 @@
 package com.ooka.analysis.algorithm_a;
 
 import com.ooka.analysis.State;
+import com.ooka.analysis.product.Product;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,11 +21,11 @@ public class AlgorithmAController {
     private State state = State.IDLE;
 
     @PutMapping("")
-    public void runAlgorithm() {
-        new Thread(this::run).start();
+    public void runAlgorithm(@RequestBody Product product) {
+        new Thread(() -> run(product)).start();
     }
 
-    private void run() {
+    private void run(Product product) {
         if (state != State.RUNNING) {
             state = State.RUNNING;
             int analysisTime = 5000;
@@ -36,7 +37,7 @@ public class AlgorithmAController {
                     throw new Exception();
                 }
                 state = State.SUCCEEDED;
-                alg.setLog("Succeeded. Analysis time: " + analysisTime + "ms");
+                alg.setLog("Analysis of "+ product.getStartingSystem() + "Succeeded. Analysis time: " + analysisTime + "ms");
             } catch (Exception e) {
                 state = State.FAILED;
                 alg.setLog("Analysis failed.");
