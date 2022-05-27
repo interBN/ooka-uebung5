@@ -48,8 +48,6 @@ docker stop algoA
 
 ## Configure Database in Idea Ultimate
 
----
-
 Go here:
 
 ![](img/db_0.png)
