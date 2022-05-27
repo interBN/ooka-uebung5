@@ -23,18 +23,45 @@ public class CLI {
         CliRepository cityRepository = applicationContext.getBean(CliRepository.class);
         cityRepository.save(c);
         System.out.println("CLI is running.");
-
-        Scanner sc = new Scanner(System.in);
         while (true) {
-            System.out.print("Please enter number: ");
-            String next = sc.next().toLowerCase(Locale.ROOT);
-            if (next.equals("exit")) break;
-            System.out.println("Your number: " + next);
+            printLine();
+            String[] options = {"Start", "Status", "Result"};
+            int i = printMenu("Please choose a number: ", options);
+            if (i == Integer.MIN_VALUE) {
+                break;
+            }
         }
         CliEntity close = new CliEntity();
         close.setLog("Close CLI");
         cityRepository.save(close);
 
         applicationContext.close();
+    }
+
+    public static int printMenu(String question, String[] options) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println(question);
+        for (int i = 0; i < options.length; i++) {
+            System.out.println("[" + i + "] " + options[i]);
+        }
+        String input = sc.next().toLowerCase(Locale.ROOT);
+        if (input.equals("exit")) {
+            return Integer.MIN_VALUE;
+        }
+        int inputInt = Integer.MIN_VALUE;
+        try {
+            inputInt = Integer.parseInt(input);
+        } catch (Exception ignore) {
+        }
+        if (inputInt < 0 || inputInt >= options.length) {
+            System.out.println("Something is wrong with the input: " + input);
+            printLine();
+            return printMenu(question, options);
+        }
+        return inputInt;
+    }
+
+    public static void printLine() {
+        System.out.println("---------------------------------------------------------");
     }
 }
