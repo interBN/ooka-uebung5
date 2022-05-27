@@ -12,13 +12,33 @@
 
 - Pull Postgres: https://hub.docker.com/_/postgres
 
-- Run Postgres using Docker:
+- Create Postgres Container:
+
+Algo-A:
 
 ```
-docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -p 5432:5432 -d postgres
+docker run --name algoA -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres
 ```
 
-Stop Postgres:
+Algo-B:
+
+```
+docker run --name algoB -e POSTGRES_PASSWORD=password -p 5433:5432 -d postgres
+```
+
+Analysis-Control:
+
+```
+docker run --name analysisControl -e POSTGRES_PASSWORD=password -p 5434:5432 -d postgres
+```
+
+CLI:
+
+```
+docker run --name cli -e POSTGRES_PASSWORD=password -p 5435:5432 -d postgres
+```
+
+- Stop Postgres:
 
 ```
 docker stop some-postgres
