@@ -12,9 +12,10 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Date;
 
 @RestController
-@RequestMapping("")
+@RequestMapping("/analysiscontrol")
 public class AnalysisController {
-    private final State state = State.IDLE;
+    private State state = State.IDLE;
+    private Integer result = null;
 
     @GetMapping(value = "/state", produces = "application/json")
     public ResponseEntity<State> getState() {
@@ -28,10 +29,50 @@ public class AnalysisController {
     }
 
     private void run() {
+        if (state != State.RUNNING) {
+            long start = new Date().getTime();
+            RestTemplate restTemplate = new RestTemplate();
 
-        long start = new Date().getTime();
-        RestTemplate restTemplate = new RestTemplate();
+            state = State.RUNNING;
 
+            Product product = getDummyProduct();
+            restTemplate.postForObject("http://localhost:8072/products", product, Product.class);
+
+            System.out.println("Starting AlgorithmA");
+            int resultA = -1;
+            try {
+                resultA = generateResult("http://localhost:8070/algorithmA", product, restTemplate);
+                System.out.println("resultA = " + resultA);
+            } catch (Exception e) {
+                System.out.println("Error while performing AlgorithmA");
+            }
+
+            System.out.println("Starting AlgorithmB");
+            int resultB = -1;
+            try {
+                resultB = generateResult("http://localhost:8071/algorithmB", product, restTemplate);
+                System.out.println("resultB = " + resultB);
+            } catch (Exception e) {
+                System.out.println("Error while performing AlgorithmB");
+            }
+
+            result = resultA + resultB;
+
+            System.out.println("A+B = " + result);
+
+            long end = new Date().getTime();
+            System.out.println("Duration = " + ((end - start) / 1000) + " sec");
+
+            product.setResult(result);
+            restTemplate.postForObject("http://localhost:8072/products", product, Product.class);
+
+            state = State.SUCCEEDED;
+        } else {
+            System.out.println(AnalysisControl.class.getName() + " is already running. Skip request.");
+        }
+    }
+
+    private Product getDummyProduct() {
         Product product = new Product();
         product.setStartingSystem("testStartingSystem");
         product.setAuxiliaryPTO("A");
@@ -45,41 +86,25 @@ public class AnalysisController {
         product.setPowerTransmission("I");
         product.setGearbox("J");
         product.setMountingSystem("K");
-        restTemplate.postForObject("http://localhost:8072/products", product, Product.class);
-
-        System.out.println("Starting AlgorithmA");
-        int resultA = -1;
-        try {
-            resultA = getResult("http://localhost:8070/algorithmA", product, restTemplate);
-            System.out.println("resultA = " + resultA);
-        } catch (Exception e) {
-            System.out.println("Error while performing AlgorithmA");
-        }
-
-        System.out.println("Starting AlgorithmB");
-        int resultB = -1;
-        try {
-            resultB = getResult("http://localhost:8071/algorithmB", product, restTemplate);
-            System.out.println("resultB = " + resultB);
-        } catch (Exception e) {
-            System.out.println("Error while performing AlgorithmB");
-        }
-
-        int result = resultA + resultB;
-        System.out.println("A+B = " + result);
-
-        long end = new Date().getTime();
-        System.out.println("Duration = " + ((end - start) / 1000) + " sec");
-
-        product.setResult(result);
-        restTemplate.postForObject("http://localhost:8072/products", product, Product.class);
+        return product;
     }
 
-    private int getResult(String baseUrl, Product product, RestTemplate restTemplate) throws Exception {
-        return getResult(baseUrl, product, restTemplate, 0);
+    @GetMapping(value = "result", produces = "application/json")
+    public ResponseEntity<Integer> getResult() {
+        HttpStatus status;
+        if (state == State.SUCCEEDED) {
+            status = HttpStatus.OK;
+        } else {
+            status = HttpStatus.NO_CONTENT;
+        }
+        return new ResponseEntity<>(result, status);
     }
 
-    private int getResult(String baseUrl, Product product, RestTemplate restTemplate, int errorCounter) throws Exception {
+    private int generateResult(String baseUrl, Product product, RestTemplate restTemplate) throws Exception {
+        return generateResult(baseUrl, product, restTemplate, 0);
+    }
+
+    private int generateResult(String baseUrl, Product product, RestTemplate restTemplate, int errorCounter) throws Exception {
         if (errorCounter > 5) {
             throw new Exception("Retry > 5");
         }
@@ -97,7 +122,7 @@ public class AnalysisController {
         } while (state == State.RUNNING);
         if (state == State.FAILED) {
             System.out.println(baseUrl + " => Retry request");
-            return getResult(baseUrl, product, restTemplate, ++errorCounter);
+            return generateResult(baseUrl, product, restTemplate, ++errorCounter);
         }
         ResponseEntity<Integer> response = restTemplate.getForEntity(baseUrl + "/result", Integer.class);
         if (response.hasBody()) {

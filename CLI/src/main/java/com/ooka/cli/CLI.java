@@ -1,5 +1,7 @@
 package com.ooka.cli;
 
+import com.ooka.analysis.State;
+import com.ooka.analysis.product.Product;
 import com.ooka.cli.log.CliEntity;
 import com.ooka.cli.log.CliRepository;
 import org.springframework.boot.SpringApplication;
@@ -7,6 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Locale;
 import java.util.Scanner;
@@ -22,13 +26,22 @@ public class CLI {
         c.setLog("Started CLI");
         CliRepository cityRepository = applicationContext.getBean(CliRepository.class);
         cityRepository.save(c);
+
+        RestTemplate restTemplate = new RestTemplate();
+
         System.out.println("CLI is running.");
         while (true) {
             printLine();
-            String[] options = {"Start", "Status", "Result"};
-            int i = printMenu("Please choose a number: ", options);
-            if (i == Integer.MIN_VALUE) {
+            String[] options = {"Start", "State", "Result"};
+            int option = printMenu("Please choose a number: ", options);
+            if (option == Integer.MIN_VALUE) {
                 break;
+            } else if (option == 0) {
+                start(restTemplate);
+            } else if (option == 1) {
+                state(restTemplate);
+            } else if (option == 2) {
+                result(restTemplate);
             }
         }
         CliEntity close = new CliEntity();
@@ -36,6 +49,31 @@ public class CLI {
         cityRepository.save(close);
 
         applicationContext.close();
+    }
+
+    private static void start(RestTemplate restTemplate) {
+        restTemplate.put("http://localhost:8072/analysiscontrol/run", Product.class);
+        System.out.println("The Analysis-Control has been started.");
+    }
+
+    private static void state(RestTemplate restTemplate) {
+        ResponseEntity<State> entity = restTemplate.getForEntity("http://localhost:8072/analysiscontrol/state", State.class);
+        System.out.println("Statuscode: " + entity.getStatusCode());
+        System.out.println("Header: " + entity.getHeaders());
+        if (entity.hasBody()) {
+            State state = entity.getBody();
+            System.out.println("State: " + state);
+        }
+    }
+
+    private static void result(RestTemplate restTemplate) {
+        ResponseEntity<Integer> entity = restTemplate.getForEntity("http://localhost:8072/analysiscontrol/result", Integer.class);
+        System.out.println("Statuscode: " + entity.getStatusCode());
+        System.out.println("Header: " + entity.getHeaders());
+        if (entity.hasBody()) {
+            Integer state = entity.getBody();
+            System.out.println("Result: " + state);
+        }
     }
 
     public static int printMenu(String question, String[] options) {
