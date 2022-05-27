@@ -18,10 +18,10 @@ import java.util.Scanner;
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = {"com.ooka.*"})
 @EntityScan("com.ooka.*")
-public class CLI {
+public class Cli {
 
     public static void main(String[] args) {
-        ConfigurableApplicationContext applicationContext = SpringApplication.run(CLI.class, args);
+        ConfigurableApplicationContext applicationContext = SpringApplication.run(Cli.class, args);
         CliEntity c = new CliEntity();
         c.setLog("Started CLI");
         CliRepository cityRepository = applicationContext.getBean(CliRepository.class);
