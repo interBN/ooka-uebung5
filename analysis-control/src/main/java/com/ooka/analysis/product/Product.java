@@ -161,7 +161,7 @@ public class Product {
 
     @Override
     public int hashCode() {
-        hash = Objects.hash(id, startingSystem, auxiliaryPTO, oilSystem, fuelSystem, coolingSystem, exhaustSystem, mountingSystem, engineManagementSystem, monitoringSystem, powerTransmission, gearbox, result);
+        hash = Objects.hash(startingSystem, auxiliaryPTO, oilSystem, fuelSystem, coolingSystem, exhaustSystem, mountingSystem, engineManagementSystem, monitoringSystem, powerTransmission, gearbox);
         return hash;
     }
 }
