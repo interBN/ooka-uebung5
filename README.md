@@ -1,6 +1,4 @@
-# ooka-uebung5
-
-Based on: https://youtu.be/FdXDtLJgS9w
+# OOKA Übung 5
 
 ## Setup
 
@@ -10,7 +8,7 @@ Based on: https://youtu.be/FdXDtLJgS9w
 
 - Configure Database in Idea Ultimate: https://www.youtube.com/watch?v=YRaHpCB8caw
 
-## DB
+### Setup DB
 
 - Pull Postgres: https://hub.docker.com/_/postgres
 
@@ -26,15 +24,12 @@ Stop Postgres:
 docker stop some-postgres
 ```
 
-microservices: https://sofienebk.medium.com/building-microservices-with-spring-boot-753be739ca7d
-
 ---
-Check:
 
-3.3. Controller Layer
+## More Links
 
-https://www.javadevjournal.com/spring-boot/spring-boot-resttemplate/
+- Microservices: https://sofienebk.medium.com/building-microservices-with-spring-boot-753be739ca7d
 
-Banner
+- 3.3. Controller Layer: https://www.javadevjournal.com/spring-boot/spring-boot-resttemplate/
 
-https://springhow.com/spring-boot-banner-generator/
+- Banner: https://springhow.com/spring-boot-banner-generator/
