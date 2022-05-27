@@ -62,8 +62,8 @@ public class AnalysisController {
         return getResult(baseUrl, product, restTemplate, 0);
     }
 
-    private static int getResult(String baseUrl, Product product, RestTemplate restTemplate, int loop) throws Exception {
-        if (loop > 5) {
+    private static int getResult(String baseUrl, Product product, RestTemplate restTemplate, int errorCounter) throws Exception {
+        if (errorCounter > 5) {
             throw new Exception("Retry > 5");
         }
         restTemplate.put(baseUrl, product);
@@ -80,11 +80,12 @@ public class AnalysisController {
         } while (state == State.RUNNING);
         if (state == State.FAILED) {
             System.out.println(baseUrl + " => Retry request");
-            return getResult(baseUrl, product, restTemplate, ++loop);
+            return getResult(baseUrl, product, restTemplate, ++errorCounter);
         }
         ResponseEntity<Integer> response = restTemplate.getForEntity(baseUrl + "/result", Integer.class);
         if (response.hasBody()) {
-            return response.getBody();
+            Integer body = response.getBody();
+            return body == null ? -1 : body;
         }
         return -1;
     }
