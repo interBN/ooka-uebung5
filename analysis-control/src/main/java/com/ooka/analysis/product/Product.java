@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Objects;
 
 @Entity
 @Table(name = "product")
@@ -24,6 +25,9 @@ public class Product {
     private String monitoringSystem;
     private String powerTransmission;
     private String gearbox;
+    private int result;
+    private int hash;
+
 
     public Long getId() {
         return id;
@@ -31,6 +35,7 @@ public class Product {
 
     public void setId(Long id) {
         this.id = id;
+        hashCode();
     }
 
     public String getStartingSystem() {
@@ -39,6 +44,7 @@ public class Product {
 
     public void setStartingSystem(String startingSystem) {
         this.startingSystem = startingSystem;
+        hashCode();
     }
 
     public String getAuxiliaryPTO() {
@@ -47,6 +53,7 @@ public class Product {
 
     public void setAuxiliaryPTO(String auxiliaryPTO) {
         this.auxiliaryPTO = auxiliaryPTO;
+        hashCode();
     }
 
     public String getOilSystem() {
@@ -55,6 +62,7 @@ public class Product {
 
     public void setOilSystem(String oilSystem) {
         this.oilSystem = oilSystem;
+        hashCode();
     }
 
     public String getFuelSystem() {
@@ -63,6 +71,7 @@ public class Product {
 
     public void setFuelSystem(String fuelSystem) {
         this.fuelSystem = fuelSystem;
+        hashCode();
     }
 
     public String getCoolingSystem() {
@@ -71,6 +80,7 @@ public class Product {
 
     public void setCoolingSystem(String coolingSystem) {
         this.coolingSystem = coolingSystem;
+        hashCode();
     }
 
     public String getExhaustSystem() {
@@ -79,6 +89,7 @@ public class Product {
 
     public void setExhaustSystem(String exhaustSystem) {
         this.exhaustSystem = exhaustSystem;
+        hashCode();
     }
 
     public String getMountingSystem() {
@@ -87,6 +98,7 @@ public class Product {
 
     public void setMountingSystem(String mountingSystem) {
         this.mountingSystem = mountingSystem;
+        hashCode();
     }
 
     public String getEngineManagementSystem() {
@@ -95,6 +107,7 @@ public class Product {
 
     public void setEngineManagementSystem(String engineManagementSystem) {
         this.engineManagementSystem = engineManagementSystem;
+        hashCode();
     }
 
     public String getMonitoringSystem() {
@@ -103,6 +116,7 @@ public class Product {
 
     public void setMonitoringSystem(String monitoringSystem) {
         this.monitoringSystem = monitoringSystem;
+        hashCode();
     }
 
     public String getPowerTransmission() {
@@ -111,6 +125,7 @@ public class Product {
 
     public void setPowerTransmission(String powerTransmission) {
         this.powerTransmission = powerTransmission;
+        hashCode();
     }
 
     public String getGearbox() {
@@ -119,5 +134,34 @@ public class Product {
 
     public void setGearbox(String gearbox) {
         this.gearbox = gearbox;
+        hashCode();
+    }
+
+    public int getResult() {
+        return result;
+    }
+
+    public void setResult(int result) {
+        this.result = result;
+        hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" + "id=" + id + ", startingSystem='" + startingSystem + '\'' + ", auxiliaryPTO='" + auxiliaryPTO + '\'' + ", oilSystem='" + oilSystem + '\'' + ", fuelSystem='" + fuelSystem + '\'' + ", coolingSystem='" + coolingSystem + '\'' + ", exhaustSystem='" + exhaustSystem + '\'' + ", mountingSystem='" + mountingSystem + '\'' + ", engineManagementSystem='" + engineManagementSystem + '\'' + ", monitoringSystem='" + monitoringSystem + '\'' + ", powerTransmission='" + powerTransmission + '\'' + ", gearbox='" + gearbox + '\'' + ", result=" + result + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return id == product.id && result == product.result && Objects.equals(startingSystem, product.startingSystem) && Objects.equals(auxiliaryPTO, product.auxiliaryPTO) && Objects.equals(oilSystem, product.oilSystem) && Objects.equals(fuelSystem, product.fuelSystem) && Objects.equals(coolingSystem, product.coolingSystem) && Objects.equals(exhaustSystem, product.exhaustSystem) && Objects.equals(mountingSystem, product.mountingSystem) && Objects.equals(engineManagementSystem, product.engineManagementSystem) && Objects.equals(monitoringSystem, product.monitoringSystem) && Objects.equals(powerTransmission, product.powerTransmission) && Objects.equals(gearbox, product.gearbox);
+    }
+
+    @Override
+    public int hashCode() {
+        hash = Objects.hash(id, startingSystem, auxiliaryPTO, oilSystem, fuelSystem, coolingSystem, exhaustSystem, mountingSystem, engineManagementSystem, monitoringSystem, powerTransmission, gearbox, result);
+        return hash;
     }
 }

@@ -15,18 +15,30 @@ import java.util.Date;
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = {"com.ooka.*"})
 @EntityScan("com.ooka.*")
-public class Controller {
+public class AnalysisController {
 
     public static void main(String[] args) throws Exception {
 
         long start = new Date().getTime();
 
-        ConfigurableApplicationContext applicationContext = SpringApplication.run(com.ooka.analysis.Controller.class, args);
+        ConfigurableApplicationContext applicationContext = SpringApplication.run(AnalysisController.class, args);
         System.out.println("Controller is running");
         ProductRepository productRepository = applicationContext.getBean(ProductRepository.class);
         Product product = new Product();
         product.setStartingSystem("testStartingSystem");
+        product.setAuxiliaryPTO("A");
+        product.setOilSystem("B");
+        product.setFuelSystem("C");
+        product.setCoolingSystem("D");
+        product.setExhaustSystem("E");
+        product.setMountingSystem("F");
+        product.setEngineManagementSystem("G");
+        product.setMonitoringSystem("H");
+        product.setPowerTransmission("I");
+        product.setGearbox("J");
+        product.setMountingSystem("K");
         productRepository.save(product);
+
         System.out.println("Starting AlgorithmA");
         RestTemplate restTemplate = new RestTemplate();
 
@@ -36,10 +48,14 @@ public class Controller {
         int resultB = getResult("http://localhost:8073/algorithmB", product, restTemplate);
         System.out.println("resultB = " + resultB);
 
-        System.out.println("A+B = " + (resultA + resultB));
+        int result = resultA + resultB;
+        System.out.println("A+B = " + result);
 
         long end = new Date().getTime();
         System.out.println("Duration = " + ((end - start) / 1000) + " sec");
+
+        product.setResult(result);
+        productRepository.save(product);
     }
 
     private static int getResult(String baseUrl, Product product, RestTemplate restTemplate) throws Exception {
