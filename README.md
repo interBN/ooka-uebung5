@@ -1,14 +1,16 @@
 # OOKA Übung 5
 
-## Setup
+## Install
 
 - Install Docker on your system: https://www.docker.com/get-started/
 
 - Install Postman: https://www.postman.com/downloads/
 
-- Configure Database in Idea Ultimate: https://www.youtube.com/watch?v=YRaHpCB8caw
+- Install Multirun: https://plugins.jetbrains.com/plugin/7248-multirun/
 
-### Setup DB
+![img.png](img/multirun.png)
+
+## Setup DB
 
 - Pull Postgres: https://hub.docker.com/_/postgres
 
@@ -38,13 +40,27 @@ CLI:
 docker run --name cli -e POSTGRES_PASSWORD=password -p 5435:5432 -d postgres
 ```
 
-- Stop Postgres:
+- Stop Postgres container:
 
 ```
-docker stop some-postgres
+docker stop algoA
 ```
+
+## Configure Database in Idea Ultimate
 
 ---
+
+Go here:
+
+![](img/db_0.png)
+
+Add the password ("password") in each data source and test the connection:
+
+![](img/db_1.png)
+
+Result:
+
+![](img/db_2.png)
 
 ## More Links
 
