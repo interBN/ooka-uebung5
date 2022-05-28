@@ -10,6 +10,8 @@ In dieser Übung wurden vier Spring Boot Microservices erstellt:
 
 - [cli](cli): Zur Steuerung von analysis-control.
 
+![](img/uml.png)
+
 ## Aufgaben
 
 > Simulieren sie die Eingabe einer Konfiguration des Optional Equipments für eine Diesel Engine.
@@ -75,7 +77,7 @@ kommuniziert werden kann.
 
 - Install Multirun: https://plugins.jetbrains.com/plugin/7248-multirun/
 
-![img.png](img/multirun.png)
+![](img/multirun.png)
 
 ## Create all Postgres Container
 
