@@ -20,6 +20,8 @@ import java.util.Scanner;
 @EntityScan("com.ooka.*")
 public class Cli {
 
+    private static final String baseUrlAnalysisControl = "http://localhost:8072/analysiscontrol";
+
     public static void main(String[] args) {
         ConfigurableApplicationContext applicationContext = SpringApplication.run(Cli.class, args);
         CliEntity c = new CliEntity();
@@ -52,12 +54,12 @@ public class Cli {
     }
 
     private static void start(RestTemplate restTemplate) {
-        restTemplate.put("http://localhost:8072/analysiscontrol/run", Product.class);
+        restTemplate.put(baseUrlAnalysisControl + "/run", Product.class);
         System.out.println("The Analysis-Control has been started.");
     }
 
     private static void state(RestTemplate restTemplate) {
-        ResponseEntity<State> entity = restTemplate.getForEntity("http://localhost:8072/analysiscontrol/state", State.class);
+        ResponseEntity<State> entity = restTemplate.getForEntity(baseUrlAnalysisControl + "/state", State.class);
         System.out.println("Statuscode: " + entity.getStatusCode());
         System.out.println("Header: " + entity.getHeaders());
         if (entity.hasBody()) {
@@ -67,7 +69,7 @@ public class Cli {
     }
 
     private static void result(RestTemplate restTemplate) {
-        ResponseEntity<Integer> entity = restTemplate.getForEntity("http://localhost:8072/analysiscontrol/result", Integer.class);
+        ResponseEntity<Integer> entity = restTemplate.getForEntity(baseUrlAnalysisControl + "/result", Integer.class);
         System.out.println("Statuscode: " + entity.getStatusCode());
         System.out.println("Header: " + entity.getHeaders());
         if (entity.hasBody()) {

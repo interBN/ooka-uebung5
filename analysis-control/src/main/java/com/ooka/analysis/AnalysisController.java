@@ -14,6 +14,9 @@ import java.util.Date;
 @RestController
 @RequestMapping("/analysiscontrol")
 public class AnalysisController {
+    final String urlA = "http://localhost:8070/algorithmA";
+    final String urlB = "http://localhost:8071/algorithmB";
+    final String urlThis = "http://localhost:8072/products";
     private State state = State.IDLE;
     private Integer result = null;
 
@@ -35,11 +38,7 @@ public class AnalysisController {
             System.out.println("Starting AlgorithmA");
             state = State.RUNNING;
 
-            String urlThis = "http://localhost:8072/products";
-            String urlA = "http://localhost:8070/algorithmA";
-            String urlB = "http://localhost:8071/algorithmB";
             RestTemplate restTemplate = new RestTemplate();
-
             Product product = getDummyProduct();
             restTemplate.postForObject(urlThis, product, Product.class);
 
