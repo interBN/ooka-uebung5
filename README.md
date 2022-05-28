@@ -1,5 +1,15 @@
 # OOKA Übung 5
 
+In dieser Übung wurden vier Spring Boot Microservices erstellt:
+
+- [algorithmA](algorithmA): Ein Service der 5 Sekunden dauert und ein Integer als zurückgibt.
+
+- [algorithmB](algorithmB): Ein Service der 7,5 Sekunden dauert und ein Integer als zurückgibt.
+
+- [analysis-control](analysis-control): Führt algorithmA und algorithmB aus berechnet das finale Resultat.
+
+- [cli](cli): Zur Steuerung von analysis-control.
+
 ## Aufgaben
 
 > Simulieren sie die Eingabe einer Konfiguration des Optional Equipments für eine Diesel Engine.
@@ -19,6 +29,7 @@ gespeicherte Konfiguration zu editieren.
 > Interaktionselement ausgeführt werden können. Durch diese Interaktion wird ein bestimmter
 > „Anker“-Algorithmus ausgeführt.
 
+Als Eingabemethode wird eine einfache [CLI](cli/src/main/java/com/ooka/cli/Cli.java) verwendet.
 
 > Wie von dem Ingenieur vorgeschlagen, sollten die Algorithmen auf choreographierte Microservices
 > aufgeteilt werden, die sich nacheinander in einer Sequenz aufrufen können. [...]
@@ -34,7 +45,7 @@ Analyse aus und speichert dieses in der persistierten Konfiguration.
 > Sie können die Algorithmen nach einer eigenen Systematik clustern [...]. Somit sollten sie
 > mindestens 3-4 Algorithmen bzw. Microservices bereitstellen.
 
-Steht noch aus
+Steht noch aus.
 
 > Wie in der Anforderungsbeschreibung des Ingenieurs beschrieben, soll der Bearbeitungs-Status
 > der Algorithmen in der Benutzeroberfläche der Anwendung stets zu entnehmen werden.
@@ -46,15 +57,13 @@ Zustände *IDLE*, *RUNNING*, *SUCCEEDED* und *FAILED* verwendet.
 > Pattern Circuit Breaker (Kapitel 4), um die Widerstandsfähigkeit der gesamten Anwendung
 > zu garantieren.
 
-
+Steht noch aus.
 
 > Machen sie sich Gedanken über die Gestaltung der Schnittstellen der einzelnen Microservices;
 > diese sollten als REST-Endpoints entwickelt werden.
 
 Jeder Microservice verwendet REST-Controller als Schnittstellen, mit denen über HTTP-Requests
 kommuniziert werden kann.
-
----
 
 ## Install
 
@@ -74,13 +83,13 @@ kommuniziert werden kann.
 docker run --name algoA -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres;docker run --name algoB -e POSTGRES_PASSWORD=password -p 5433:5432 -d postgres;docker run --name analysisControl -e POSTGRES_PASSWORD=password -p 5434:5432 -d postgres;docker run --name cli -e POSTGRES_PASSWORD=password -p 5435:5432 -d postgres
 ```
 
-## Stop all Postgres container:
+## Stop all Postgres Container:
 
 ```
 docker stop $(docker ps -a -q --filter ancestor=postgres)
 ```
 
-## Restart all Postgres container:
+## Restart all Postgres Container:
 
 ```
 docker restart $(docker ps -a -q --filter ancestor=postgres)
