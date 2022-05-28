@@ -4,46 +4,30 @@
 
 - Install Docker on your system: https://www.docker.com/get-started/
 
+- Pull Postgres: https://hub.docker.com/_/postgres
+
 - Install Postman: https://www.postman.com/downloads/
 
 - Install Multirun: https://plugins.jetbrains.com/plugin/7248-multirun/
 
 ![img.png](img/multirun.png)
 
-## Setup DB
-
-- Pull Postgres: https://hub.docker.com/_/postgres
-
-- Create Postgres Container:
-
-Algo-A:
+## Create all Postgres Container
 
 ```
-docker run --name algoA -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres
+docker run --name algoA -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres;docker run --name algoB -e POSTGRES_PASSWORD=password -p 5433:5432 -d postgres;docker run --name analysisControl -e POSTGRES_PASSWORD=password -p 5434:5432 -d postgres;docker run --name cli -e POSTGRES_PASSWORD=password -p 5435:5432 -d postgres
 ```
 
-Algo-B:
+## Stop all Postgres container:
 
 ```
-docker run --name algoB -e POSTGRES_PASSWORD=password -p 5433:5432 -d postgres
+docker stop $(docker ps -a -q --filter ancestor=postgres)
 ```
 
-Analysis-Control:
+## Restart all Postgres container:
 
 ```
-docker run --name analysisControl -e POSTGRES_PASSWORD=password -p 5434:5432 -d postgres
-```
-
-CLI:
-
-```
-docker run --name cli -e POSTGRES_PASSWORD=password -p 5435:5432 -d postgres
-```
-
-- Stop Postgres container:
-
-```
-docker stop algoA
+docker restart $(docker ps -a -q --filter ancestor=postgres)
 ```
 
 ## Configure Database in Idea Ultimate
