@@ -6,7 +6,7 @@ In dieser Übung wurden vier Spring Boot Microservices erstellt:
 
 - [algorithmB](algorithmB): Ein Service der 7,5 Sekunden dauert und ein Integer als zurückgibt.
 
-- [analysis-control](analysis-control): Führt algorithmA und algorithmB aus berechnet das finale Resultat.
+- [analysis-control](analysis-control): Führt algorithmA und algorithmB parallel aus berechnet das finale Resultat.
 
 - [cli](cli): Zur Steuerung von analysis-control.
 
