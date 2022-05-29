@@ -25,6 +25,7 @@ public class AlgorithmAController {
     }
 
     private void run(Product product) {
+        System.out.println("Starting AlgorithmA");
         if (state != State.RUNNING) {
             state = State.RUNNING;
             int analysisTime = 5000;
@@ -43,6 +44,7 @@ public class AlgorithmAController {
             }
             algorithmARepository.save(alg);
         }
+        System.out.println("Finished AlgorithmA");
     }
 
     @GetMapping(value = "result", produces = "application/json")

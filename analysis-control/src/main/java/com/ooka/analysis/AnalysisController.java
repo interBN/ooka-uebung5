@@ -35,7 +35,6 @@ public class AnalysisController {
         if (state != State.RUNNING) {
             long start = new Date().getTime();
 
-            System.out.println("Starting AlgorithmA");
             state = State.RUNNING;
 
             RestTemplate restTemplate = new RestTemplate();
@@ -43,7 +42,9 @@ public class AnalysisController {
             restTemplate.postForObject(urlThis, product, Product.class);
 
             restTemplate.put(urlA, product);
+            System.out.println("Starting AlgorithmA");
             restTemplate.put(urlB, product);
+            System.out.println("Starting AlgorithmB");
 
             int resultA = -1, resultB = -1;
             State stateA = null, stateB = null;
