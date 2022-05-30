@@ -52,6 +52,7 @@ public class AnalysisController {
             do {
                 try {
                     Thread.sleep(500);
+                    System.out.println("---------------------------------------------------------");
                     stateA = checkState(stateA, urlA, product, restTemplate);
                     System.out.println(urlA + " => State: " + stateA);
                     stateB = checkState(stateB, urlB, product, restTemplate);
@@ -64,6 +65,8 @@ public class AnalysisController {
             resultA = fetchResult(restTemplate, urlA, resultA);
             resultB = fetchResult(restTemplate, urlB, resultB);
             result = resultA + resultB;
+
+            System.out.println("---------------------------------------------------------");
             System.out.println("A+B = " + result);
 
             long end = new Date().getTime();
