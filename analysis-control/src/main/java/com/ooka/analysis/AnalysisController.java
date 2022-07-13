@@ -1,6 +1,11 @@
 package com.ooka.analysis;
 
+import com.netflix.appinfo.InstanceInfo;
+import com.netflix.discovery.EurekaClient;
 import com.ooka.analysis.product.Product;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,11 +19,16 @@ import java.util.Date;
 @RestController
 @RequestMapping("/analysiscontrol")
 public class AnalysisController {
-    final String urlA = "http://localhost:8070/algorithmA";
-    final String urlB = "http://localhost:8071/algorithmB";
-    final String urlThis = "http://localhost:8072/products";
+    final String nameA = "algorithm-a";
+    final String nameB = "algorithm-b";
+    final String nameThis = "analysis-control";
     private State state = State.IDLE;
     private Integer result = null;
+
+
+    @Autowired
+    @Lazy
+    private EurekaClient eurekaClient;
 
     @GetMapping(value = "/state", produces = "application/json")
     public ResponseEntity<State> getState() {
@@ -36,6 +46,14 @@ public class AnalysisController {
             long start = new Date().getTime();
 
             state = State.RUNNING;
+
+            InstanceInfo serviceThis = eurekaClient.getApplication(nameThis).getInstances().get(0);
+            InstanceInfo serviceA = eurekaClient.getApplication(nameA).getInstances().get(0);
+            InstanceInfo serviceB = eurekaClient.getApplication(nameB).getInstances().get(0);
+
+            String urlThis = serviceThis.getHomePageUrl() + "/products";
+            String urlA = serviceA.getHomePageUrl() + "/algorithmA";
+            String urlB = serviceB.getHomePageUrl() + "/algorithmB";
 
             RestTemplate restTemplate = new RestTemplate();
             Product product = getDummyProduct();
@@ -130,4 +148,7 @@ public class AnalysisController {
         }
         return new ResponseEntity<>(result, status);
     }
+
+    @Value("${spring.application.name}")
+    private String appName;
 }

@@ -1,8 +1,11 @@
 package com.ooka.analysis.algorithm_b;
 
+import com.netflix.discovery.EurekaClient;
 import com.ooka.analysis.State;
 import com.ooka.analysis.product.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -81,4 +84,7 @@ public class AlgorithmBController {
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Log with " + algorithmBId + " not found");
     }
+
+    @Value("${spring.application.name}")
+    private String appName;
 }
