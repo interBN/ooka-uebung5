@@ -1,8 +1,21 @@
 spring:
   application:
     name: cli
+  datasource:
+    url: jdbc:postgresql://localhost:5435/postgres?createDatabaseIfNotExist=true
+    username: postgres
+    password: password
+  sql:
+    init:
+      mode: always
+      platform: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+  main:
+    allow-bean-definition-overriding: true
 server:
-  port: 0
+  port: 8073
 eureka:
   client:
     serviceUrl:

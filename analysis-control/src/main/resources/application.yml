@@ -1,8 +1,19 @@
 spring:
   application:
     name: analysis-control
+  datasource:
+    url: jdbc:postgresql://localhost:5434/postgres?createDatabaseIfNotExist=true
+    username: postgres
+    password: password
+  sql:
+    init:
+      platform: postgres
+      mode: always
+  jpa:
+    hibernate:
+      ddl-auto: update
 server:
-  port: 0
+  port: 8072
 eureka:
   client:
     serviceUrl:

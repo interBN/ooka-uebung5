@@ -1,6 +1,21 @@
 spring:
   application:
     name: power-systems
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres?createDatabaseIfNotExist=true
+    username: postgres
+    password: password
+  sql:
+    init:
+      mode: always
+      platform: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+  main:
+    allow-bean-definition-overriding: true
+server:
+  port: 8070
 eureka:
   client:
     serviceUrl:
