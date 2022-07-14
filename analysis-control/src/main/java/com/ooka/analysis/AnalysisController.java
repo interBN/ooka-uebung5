@@ -19,8 +19,9 @@ import java.util.Date;
 @RestController
 @RequestMapping("/analysiscontrol")
 public class AnalysisController {
-    final String nameA = "algorithm-a";
-    final String nameB = "algorithm-b";
+    final String nameA = "power-systems";
+    final String nameB = "liquid-gas-systems";
+    final String nameC = "management-systems";
     final String nameThis = "analysis-control";
     private State state = State.IDLE;
     private Integer result = null;
@@ -50,22 +51,26 @@ public class AnalysisController {
             InstanceInfo serviceThis = eurekaClient.getApplication(nameThis).getInstances().get(0);
             InstanceInfo serviceA = eurekaClient.getApplication(nameA).getInstances().get(0);
             InstanceInfo serviceB = eurekaClient.getApplication(nameB).getInstances().get(0);
+            InstanceInfo serviceC = eurekaClient.getApplication(nameC).getInstances().get(0);
 
             String urlThis = serviceThis.getHomePageUrl() + "/products";
-            String urlA = serviceA.getHomePageUrl() + "/algorithmA";
-            String urlB = serviceB.getHomePageUrl() + "/algorithmB";
+            String urlA = serviceA.getHomePageUrl() + "/powerSystems";
+            String urlB = serviceB.getHomePageUrl() + "/liquidGas";
+            String urlC = serviceC.getHomePageUrl() + "/management";
 
             RestTemplate restTemplate = new RestTemplate();
             Product product = getDummyProduct();
             restTemplate.postForObject(urlThis, product, Product.class);
 
             restTemplate.put(urlA, product);
-            System.out.println("Starting AlgorithmA");
+            System.out.println("Starting Power Systems");
             restTemplate.put(urlB, product);
-            System.out.println("Starting AlgorithmB");
+            System.out.println("Starting Liquid and Gas Systems");
+            restTemplate.put(urlC, product);
+            System.out.println("Starting Management Systems");
 
-            int resultA = -1, resultB = -1;
-            State stateA = null, stateB = null;
+            int resultA = -1, resultB = -1, resultC = -1;
+            State stateA = null, stateB = null, stateC = null;
 
             do {
                 try {
@@ -75,6 +80,8 @@ public class AnalysisController {
                     System.out.println(urlA + " => State: " + stateA);
                     stateB = checkState(stateB, urlB, product, restTemplate);
                     System.out.println(urlB + " => State: " + stateB);
+                    stateC = checkState(stateC, urlC, product, restTemplate);
+                    System.out.println(urlC + " => State: " + stateC);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -82,10 +89,14 @@ public class AnalysisController {
 
             resultA = fetchResult(restTemplate, urlA, resultA);
             resultB = fetchResult(restTemplate, urlB, resultB);
-            result = resultA + resultB;
+            resultC = fetchResult(restTemplate, urlC, resultC);
+            result = resultA + resultB + resultC;
 
             System.out.println("---------------------------------------------------------");
-            System.out.println("A+B = " + result);
+            System.out.println("Power Systems: " + resultA);
+            System.out.println("Liquid/Gas Systems: " + resultB);
+            System.out.println("Management Systems: " + resultC);
+            System.out.println("Total result: " + result);
 
             long end = new Date().getTime();
             System.out.println("Duration = " + ((end - start) / 1000) + " sec");
