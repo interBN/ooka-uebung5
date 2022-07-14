@@ -47,7 +47,7 @@ Analyse aus und speichert dieses in der persistierten Konfiguration.
 > Sie können die Algorithmen nach einer eigenen Systematik clustern [...]. Somit sollten sie
 > mindestens 3-4 Algorithmen bzw. Microservices bereitstellen.
 
-Steht noch aus.
+Die Algorithmen wurden in "Power Systems", "Liquid and  Gas Systems" und "Management Systems" aufgeteilt.
 
 > Wie in der Anforderungsbeschreibung des Ingenieurs beschrieben, soll der Bearbeitungs-Status
 > der Algorithmen in der Benutzeroberfläche der Anwendung stets zu entnehmen werden.
@@ -59,7 +59,8 @@ Zustände *IDLE*, *RUNNING*, *SUCCEEDED* und *FAILED* verwendet.
 > Pattern Circuit Breaker (Kapitel 4), um die Widerstandsfähigkeit der gesamten Anwendung
 > zu garantieren.
 
-Steht noch aus.
+Bisher wurde das Curcuit Breaker Pattern noch nicht umgesetzt. Dies soll in Kombination mit der Implementierung
+von Netflix Hystrix stattfinden.
 
 > Machen sie sich Gedanken über die Gestaltung der Schnittstellen der einzelnen Microservices;
 > diese sollten als REST-Endpoints entwickelt werden.
