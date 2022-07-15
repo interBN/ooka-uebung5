@@ -1,10 +1,12 @@
 # OOKA Übung 5
 
-In dieser Übung wurden vier Spring Boot Microservices erstellt:
+In dieser Übung wurden fünf Spring Boot Microservices erstellt:
 
-- [algorithmA](algorithmA): Ein Service der 5 Sekunden dauert und ein Integer als zurückgibt.
+- [power-systems](power-systems): Ein Service der 5 Sekunden dauert und ein Integer als zurückgibt.
 
-- [algorithmB](algorithmB): Ein Service der 7,5 Sekunden dauert und ein Integer als zurückgibt.
+- [liquid-gas-systems](liquid-gas-systems): Ein Service der 7,5 Sekunden dauert und ein Integer als zurückgibt.
+
+- [management-systems](management-systems): Ein Service der 5 Sekunden dauert und ein Integer als zurückgibt.
 
 - [analysis-control](analysis-control): Führt algorithmA und algorithmB parallel aus berechnet das finale Resultat.
 
@@ -83,7 +85,13 @@ kommuniziert werden kann.
 ## Create all Postgres Container
 
 ```
-docker run --name algoA -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres;docker run --name algoB -e POSTGRES_PASSWORD=password -p 5433:5432 -d postgres;docker run --name analysisControl -e POSTGRES_PASSWORD=password -p 5434:5432 -d postgres;docker run --name cli -e POSTGRES_PASSWORD=password -p 5435:5432 -d postgres
+docker run --name powerSystems -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres;docker run --name liquidGasSystems -e POSTGRES_PASSWORD=password -p 5433:5432 -d postgres;docker run --name analysisControl -e POSTGRES_PASSWORD=password -p 5434:5432 -d postgres;docker run --name cli -e POSTGRES_PASSWORD=password -p 5435:5432 -d postgres;docker run --name managementSystems -e POSTGRES_PASSWORD=password -p 5436:5432 -d postgres
+```
+
+Windows:
+
+```
+docker run --name powerSystems -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres&docker run --name liquidGasSystems -e POSTGRES_PASSWORD=password -p 5433:5432 -d postgres&docker run --name analysisControl -e POSTGRES_PASSWORD=password -p 5434:5432 -d postgres&docker run --name cli -e POSTGRES_PASSWORD=password -p 5435:5432 -d postgres&docker run --name managementSystems -e POSTGRES_PASSWORD=password -p 5436:5432 -d postgres
 ```
 
 ## Stop all Postgres Container:
