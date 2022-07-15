@@ -30,12 +30,13 @@ public class AnalysisController {
     @Autowired
     @Lazy
     private EurekaClient eurekaClient;
+    @Value("${spring.application.name}")
+    private String appName;
 
     @GetMapping(value = "/state", produces = "application/json")
     public ResponseEntity<State> getState() {
         return new ResponseEntity<>(state, HttpStatus.OK);
     }
-
 
     @PutMapping("/run")
     public void runController() {
@@ -85,7 +86,7 @@ public class AnalysisController {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            } while (stateA != State.SUCCEEDED || stateB != State.SUCCEEDED);
+            } while (stateA != State.SUCCEEDED || stateB != State.SUCCEEDED || stateC != State.SUCCEEDED);
 
             resultA = fetchResult(restTemplate, urlA, resultA);
             resultB = fetchResult(restTemplate, urlB, resultB);
@@ -159,7 +160,4 @@ public class AnalysisController {
         }
         return new ResponseEntity<>(result, status);
     }
-
-    @Value("${spring.application.name}")
-    private String appName;
 }
