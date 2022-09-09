@@ -7,19 +7,26 @@ import com.ooka.analysis.feign.LiquidGasFeignClient;
 import com.ooka.analysis.feign.ManagementSystemsFeignClient;
 import com.ooka.analysis.feign.PowerSystemsFeignClient;
 import com.ooka.analysis.product.Product;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import io.github.resilience4j.retry.Retry;
+import io.github.resilience4j.retry.RetryConfig;
+import io.github.resilience4j.retry.RetryRegistry;
+import io.vavr.CheckedFunction0;
+import io.vavr.control.Try;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
 import java.util.Date;
+import java.util.function.Function;
 
 @RestController
 @RequestMapping("/analysiscontrol")
@@ -27,6 +34,9 @@ import java.util.Date;
 public class AnalysisController {
     private State state = State.IDLE;
     private Integer result = null;
+
+    private CircuitBreakerRegistry circuitBreakerRegistry = null;
+    private RetryRegistry retryRegistry = null;
 
     @Autowired
     private AnalysisFeignClient analysisClient;
@@ -54,50 +64,56 @@ public class AnalysisController {
         if (state != State.RUNNING) {
             long start = new Date().getTime();
 
+            if (circuitBreakerRegistry == null)
+                circuitBreakerRegistry = initCircuitBreakerRegistry();
+            if (retryRegistry == null)
+                retryRegistry = initRetryRegistry();
+
             state = State.RUNNING;
 
             Product product = getDummyProduct();
             analysisClient.createProduct(product);
 
-            powerSystemsClient.runAlgorithm(product);
-            System.out.println("Starting Power Systems");
-            liquidGasClient.runAlgorithm(product);
-            System.out.println("Starting Liquid and Gas Systems");
-            managementSystemsClient.runAlgorithm(product);
-            System.out.println("Starting Management Systems");
+            System.out.println("Starting algorithms");
 
-            int resultA, resultB, resultC;
-            State stateA = null, stateB = null, stateC = null;
+            CircuitBreaker circuitBreakerA = circuitBreakerRegistry.circuitBreaker("powerSystems");
+            Retry retryA = retryRegistry.retry("powerSystems");
+            Function<Product, Integer> decoratedA = Retry.decorateFunction(retryA,
+                    CircuitBreaker.decorateFunction(circuitBreakerA, this::runPowerSystems));
 
-            do {
-                try {
-                    Thread.sleep(500);
-                    System.out.println("---------------------------------------------------------");
-                    stateA = powerSystemsClient.getState().getBody();
-                    if (stateA == State.FAILED) {
-                        powerSystemsClient.runAlgorithm(product);
-                    }
-                    System.out.println("Power Systems => State: " + stateA);
-                    stateB = liquidGasClient.getState().getBody();
-                    if (stateB == State.FAILED) {
-                        liquidGasClient.runAlgorithm(product);
-                    }
-                    System.out.println("Liquid and Gas Systems => State: " + stateB);
+            int resultA;
+            try {
+                resultA = decoratedA.apply(product);
+            } catch (Exception ignored){
+                resultA = 0;
+                System.out.println("Power Systems failed");
+            }
 
-                    stateC = managementSystemsClient.getState().getBody();
-                    if (stateC == State.FAILED) {
-                        managementSystemsClient.runAlgorithm(product);
-                    }
-                    System.out.println("Management Systems => State: " + stateC);
+            CircuitBreaker circuitBreakerB = circuitBreakerRegistry.circuitBreaker("liquidGasSystems");
+            Retry retryB = retryRegistry.retry("liquidGasSystems");
+            Function<Product, Integer> decoratedB = Retry.decorateFunction(retryB,
+                    CircuitBreaker.decorateFunction(circuitBreakerB, this::runPowerSystems));
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } while (stateA != State.SUCCEEDED || stateB != State.SUCCEEDED || stateC != State.SUCCEEDED);
+            int resultB;
+            try {
+                resultB = decoratedB.apply(product);
+            } catch (Exception ignored){
+                resultB = 0;
+                System.out.println("Liquid & Gas Systems failed");
+            }
 
-            resultA = powerSystemsClient.getResult().getBody() != null ? powerSystemsClient.getResult().getBody() : -1;
-            resultB = liquidGasClient.getResult().getBody() != null ? liquidGasClient.getResult().getBody() : -1;
-            resultC = managementSystemsClient.getResult().getBody() != null ? managementSystemsClient.getResult().getBody() : -1;
+            CircuitBreaker circuitBreakerC = circuitBreakerRegistry.circuitBreaker("managementSystems");
+            Retry retryC = retryRegistry.retry("managementSystems");
+            Function<Product, Integer> decoratedC = Retry.decorateFunction(retryC,
+                    CircuitBreaker.decorateFunction(circuitBreakerC, this::runPowerSystems));
+
+            int resultC;
+            try {
+                resultC = decoratedC.apply(product);
+            } catch (Exception ignored){
+                resultC = 0;
+                System.out.println("Management Systems failed");
+            }
             result = resultA + resultB + resultC;
 
             System.out.println("---------------------------------------------------------");
@@ -117,6 +133,90 @@ public class AnalysisController {
         } else {
             System.out.println(AnalysisControl.class.getName() + " is already running. Skip request.");
         }
+    }
+    private int runPowerSystems(Product product){
+        State algorithmState = null;
+        powerSystemsClient.runAlgorithm(product);
+        System.out.println("Starting Power Systems");
+
+        while(algorithmState != State.SUCCEEDED){
+            try {
+            Thread.sleep(500);
+            System.out.println("---------------------------------------------------------");
+            algorithmState = powerSystemsClient.getState().getBody();
+            if (algorithmState == State.FAILED) {
+                powerSystemsClient.runAlgorithm(product);
+            }
+            System.out.println("Power Systems => State: " + algorithmState);
+            }catch (InterruptedException e){
+                e.printStackTrace();
+            }
+        }
+        System.out.println("---------------------------------------------------------");
+        return powerSystemsClient.getResult().getBody();
+    }
+
+    private int runLiquidGasSystems(Product product){
+        State algorithmState = null;
+        liquidGasClient.runAlgorithm(product);
+        System.out.println("Starting Liquid and Gas Systems");
+
+        while(algorithmState != State.SUCCEEDED){
+            try {
+                Thread.sleep(500);
+                System.out.println("---------------------------------------------------------");
+                algorithmState = liquidGasClient.getState().getBody();
+                if (algorithmState == State.FAILED) {
+                    liquidGasClient.runAlgorithm(product);
+                }
+                System.out.println("Liquid and Gas Systems => State: " + algorithmState);
+            }catch (InterruptedException e){
+                e.printStackTrace();
+            }
+        }
+        System.out.println("---------------------------------------------------------");
+        return liquidGasClient.getResult().getBody();
+    }
+
+    private int runManagementSystems(Product product){
+        State algorithmState = null;
+        managementSystemsClient.runAlgorithm(product);
+        System.out.println("Starting Management Systems");
+
+        while(algorithmState != State.SUCCEEDED){
+            try {
+                Thread.sleep(500);
+                System.out.println("---------------------------------------------------------");
+                algorithmState = managementSystemsClient.getState().getBody();
+                if (algorithmState == State.FAILED) {
+                    managementSystemsClient.runAlgorithm(product);
+                }
+                System.out.println("Management Systems => State: " + algorithmState);
+            }catch (InterruptedException e){
+                e.printStackTrace();
+            }
+        }
+        System.out.println("---------------------------------------------------------");
+        return managementSystemsClient.getResult().getBody();
+    }
+
+    private CircuitBreakerRegistry initCircuitBreakerRegistry(){
+        CircuitBreakerConfig config = CircuitBreakerConfig.custom()
+                .slidingWindowType(CircuitBreakerConfig.SlidingWindowType.COUNT_BASED)
+                .permittedNumberOfCallsInHalfOpenState(3)
+                .automaticTransitionFromOpenToHalfOpenEnabled(true)
+                .slidingWindowSize(5)
+                .failureRateThreshold(40)
+                .build();
+        return CircuitBreakerRegistry.of(config);
+    }
+
+    private RetryRegistry initRetryRegistry(){
+        RetryConfig config = RetryConfig.custom()
+                .waitDuration(Duration.ofSeconds(10))
+                .maxAttempts(5)
+                .build();
+        return RetryRegistry.of(config);
     }
 
     private Product getDummyProduct() {
