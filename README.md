@@ -49,7 +49,7 @@ Analyse aus und speichert dieses in der persistierten Konfiguration.
 > Sie können die Algorithmen nach einer eigenen Systematik clustern [...]. Somit sollten sie
 > mindestens 3-4 Algorithmen bzw. Microservices bereitstellen.
 
-Die Algorithmen wurden in "Power Systems", "Liquid and  Gas Systems" und "Management Systems" aufgeteilt.
+Die Algorithmen wurden in "Power Systems", "Liquid and Gas Systems" und "Management Systems" aufgeteilt.
 
 > Wie in der Anforderungsbeschreibung des Ingenieurs beschrieben, soll der Bearbeitungs-Status
 > der Algorithmen in der Benutzeroberfläche der Anwendung stets zu entnehmen werden.
@@ -72,13 +72,15 @@ kommuniziert werden kann.
 
 ## Install
 
-- Install Docker on your system: https://www.docker.com/get-started/
+- Docker (Windows): https://www.docker.com/get-started/
+
+- Docker (Mac): https://formulae.brew.sh/formula/colima
 
 - Pull Postgres: https://hub.docker.com/_/postgres
 
-- Install Postman: https://www.postman.com/downloads/
+- Optional: Postman: https://www.postman.com/downloads/
 
-- Install Multirun: https://plugins.jetbrains.com/plugin/7248-multirun/
+- Optional: Multirun: https://plugins.jetbrains.com/plugin/7248-multirun/
 
 ![](img/multirun.png)
 
@@ -92,6 +94,16 @@ Windows:
 
 ```
 docker run --name powerSystems -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres&docker run --name liquidGasSystems -e POSTGRES_PASSWORD=password -p 5433:5432 -d postgres&docker run --name analysisControl -e POSTGRES_PASSWORD=password -p 5434:5432 -d postgres&docker run --name cli -e POSTGRES_PASSWORD=password -p 5435:5432 -d postgres&docker run --name managementSystems -e POSTGRES_PASSWORD=password -p 5436:5432 -d postgres
+```
+
+## Start all Postgres Container:
+
+```
+docker start powerSystems && 
+docker start liquidGasSystems && 
+docker start analysisControl && 
+docker start cli &&
+docker start managementSystems
 ```
 
 ## Stop all Postgres Container:
