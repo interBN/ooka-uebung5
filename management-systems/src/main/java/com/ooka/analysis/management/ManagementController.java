@@ -2,6 +2,8 @@ package com.ooka.analysis.management;
 
 import com.ooka.analysis.State;
 import com.ooka.analysis.product.Product;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -14,11 +16,14 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/management")
 public class ManagementController {
+    Logger logger = LoggerFactory.getLogger(ManagementController.class);
 
     @Autowired
     ManagementRepository managementRepository;
 
     private State state = State.IDLE;
+    @Value("${spring.application.name}")
+    private String appName;
 
     @PutMapping("")
     public void runAlgorithm(@RequestBody Product product) {
@@ -26,7 +31,7 @@ public class ManagementController {
     }
 
     private void run(Product product) {
-        System.out.println("Starting Management Systems Analysis");
+        logger.info("Starting Management Systems Analysis");
         if (state != State.RUNNING) {
             state = State.RUNNING;
             int analysisTime = 5000;
@@ -45,7 +50,7 @@ public class ManagementController {
             }
             managementRepository.save(alg);
         }
-        System.out.println("Finished Management Systems Analysis");
+        logger.info("Finished Management Systems Analysis");
     }
 
     @GetMapping(value = "result", produces = "application/json")
@@ -82,7 +87,4 @@ public class ManagementController {
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Log with " + managementId + " not found");
     }
-
-    @Value("${spring.application.name}")
-    private String appName;
 }

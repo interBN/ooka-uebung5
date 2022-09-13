@@ -2,6 +2,8 @@ package com.ooka.analysis.liquid_gas;
 
 import com.ooka.analysis.State;
 import com.ooka.analysis.product.Product;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -15,10 +17,14 @@ import java.util.Optional;
 @RequestMapping("/liquidGas")
 public class LiquidGasController {
 
+    Logger logger = LoggerFactory.getLogger(LiquidGasController.class);
+
     @Autowired
     LiquidGasRepository liquidGasRepository;
 
     private State state = State.IDLE;
+    @Value("${spring.application.name}")
+    private String appName;
 
     @PutMapping("")
     public void runAlgorithm(@RequestBody Product product) {
@@ -26,7 +32,7 @@ public class LiquidGasController {
     }
 
     private void run(Product product) {
-        System.out.println("Starting Liquid and Gas Systems Analysis");
+        logger.info("Starting Liquid and Gas Systems Analysis");
         if (state != State.RUNNING) {
             state = State.RUNNING;
             int analysisTime = 7500;
@@ -45,7 +51,7 @@ public class LiquidGasController {
             }
             liquidGasRepository.save(alg);
         }
-        System.out.println("Finished Liquid and Gas Systems Analysis");
+        logger.info("Finished Liquid and Gas Systems Analysis");
     }
 
     @GetMapping(value = "result", produces = "application/json")
@@ -82,7 +88,4 @@ public class LiquidGasController {
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Log with " + liquidaGasId + " not found");
     }
-
-    @Value("${spring.application.name}")
-    private String appName;
 }

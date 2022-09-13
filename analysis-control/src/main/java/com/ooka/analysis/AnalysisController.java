@@ -1,7 +1,5 @@
 package com.ooka.analysis;
 
-import com.netflix.appinfo.InstanceInfo;
-import com.netflix.discovery.EurekaClient;
 import com.ooka.analysis.feign.AnalysisFeignClient;
 import com.ooka.analysis.feign.LiquidGasFeignClient;
 import com.ooka.analysis.feign.ManagementSystemsFeignClient;
@@ -13,16 +11,14 @@ import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
-import io.vavr.CheckedFunction0;
-import io.vavr.control.Try;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 import java.util.Date;
@@ -32,6 +28,9 @@ import java.util.function.Function;
 @RequestMapping("/analysiscontrol")
 @EnableFeignClients
 public class AnalysisController {
+
+    Logger logger = LoggerFactory.getLogger(AnalysisController.class);
+
     private State state = State.IDLE;
     private Integer result = null;
 
@@ -56,25 +55,29 @@ public class AnalysisController {
     }
 
     @PutMapping("/run")
-    public void runController() {
-        new Thread(this::run).start();
+    public void runController(@RequestBody Product product) {
+        new Thread(() -> {
+            run(product);
+        }).start();
     }
 
-    private void run() {
+    private void run(Product product) {
         if (state != State.RUNNING) {
             long start = new Date().getTime();
 
-            if (circuitBreakerRegistry == null)
+            if (circuitBreakerRegistry == null) {
                 circuitBreakerRegistry = initCircuitBreakerRegistry();
-            if (retryRegistry == null)
+            }
+            if (retryRegistry == null) {
                 retryRegistry = initRetryRegistry();
-
+            }
             state = State.RUNNING;
-
-            Product product = getDummyProduct();
+            if (product == null) {
+                product = getDummyProduct();
+            }
             analysisClient.createProduct(product);
 
-            System.out.println("Starting algorithms");
+            logger.info("Starting algorithms");
 
             CircuitBreaker circuitBreakerA = circuitBreakerRegistry.circuitBreaker("powerSystems");
             Retry retryA = retryRegistry.retry("powerSystems");
@@ -84,9 +87,9 @@ public class AnalysisController {
             int resultA;
             try {
                 resultA = decoratedA.apply(product);
-            } catch (Exception ignored){
+            } catch (Exception ignored) {
                 resultA = 0;
-                System.out.println("Power Systems failed");
+                logger.warn("Power Systems failed");
             }
 
             CircuitBreaker circuitBreakerB = circuitBreakerRegistry.circuitBreaker("liquidGasSystems");
@@ -97,9 +100,9 @@ public class AnalysisController {
             int resultB;
             try {
                 resultB = decoratedB.apply(product);
-            } catch (Exception ignored){
+            } catch (Exception ignored) {
                 resultB = 0;
-                System.out.println("Liquid & Gas Systems failed");
+                logger.warn("Liquid & Gas Systems failed");
             }
 
             CircuitBreaker circuitBreakerC = circuitBreakerRegistry.circuitBreaker("managementSystems");
@@ -110,80 +113,80 @@ public class AnalysisController {
             int resultC;
             try {
                 resultC = decoratedC.apply(product);
-            } catch (Exception ignored){
+            } catch (Exception ignored) {
                 resultC = 0;
-                System.out.println("Management Systems failed");
+                logger.warn("Management Systems failed");
             }
             result = resultA + resultB + resultC;
 
-            System.out.println("---------------------------------------------------------");
-            System.out.println("Power Systems: " + resultA);
-            System.out.println("Liquid/Gas Systems: " + resultB);
-            System.out.println("Management Systems: " + resultC);
-            System.out.println("Total result: " + result);
+            logger.info("---------------------------------------------------------");
+            logger.info("Power Systems: " + resultA);
+            logger.info("Liquid/Gas Systems: " + resultB);
+            logger.info("Management Systems: " + resultC);
+            logger.info("Total result: " + result);
 
             long end = new Date().getTime();
-            System.out.println("Duration = " + ((end - start) / 1000) + " sec");
+            logger.info("Duration = " + ((end - start) / 1000) + " sec");
 
             product.setResult(result);
             analysisClient.createProduct(product);
 
-
             state = State.SUCCEEDED;
         } else {
-            System.out.println(AnalysisControl.class.getName() + " is already running. Skip request.");
+            logger.info(AnalysisControl.class.getName() + " is already running. Skip request.");
         }
     }
-    private int runPowerSystems(Product product){
+
+    private int runPowerSystems(Product product) {
         State algorithmState = null;
         powerSystemsClient.runAlgorithm(product);
-        System.out.println("Starting Power Systems");
+        logger.info("Starting Power Systems");
 
-        while(algorithmState != State.SUCCEEDED){
+        while (algorithmState != State.SUCCEEDED) {
             try {
-            Thread.sleep(500);
-            System.out.println("---------------------------------------------------------");
-            algorithmState = powerSystemsClient.getState().getBody();
-            if (algorithmState == State.FAILED) {
-                powerSystemsClient.runAlgorithm(product);
-            }
-            System.out.println("Power Systems => State: " + algorithmState);
-            }catch (InterruptedException e){
+                Thread.sleep(500);
+                logger.info("---------------------------------------------------------");
+                algorithmState = powerSystemsClient.getState().getBody();
+                if (algorithmState == State.FAILED) {
+                    powerSystemsClient.runAlgorithm(product);
+                }
+                logger.info("Power Systems => State: " + algorithmState);
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        System.out.println("---------------------------------------------------------");
+        logger.info("---------------------------------------------------------");
         return powerSystemsClient.getResult().getBody();
     }
 
-    private int runLiquidGasSystems(Product product){
+    private int runLiquidGasSystems(Product product) {
         State algorithmState = null;
         liquidGasClient.runAlgorithm(product);
-        System.out.println("Starting Liquid and Gas Systems");
+        logger.info("Starting Liquid and Gas Systems");
 
-        while(algorithmState != State.SUCCEEDED){
+        while (algorithmState != State.SUCCEEDED) {
             try {
                 Thread.sleep(500);
-                System.out.println("---------------------------------------------------------");
+                logger.info("---------------------------------------------------------");
                 algorithmState = liquidGasClient.getState().getBody();
                 if (algorithmState == State.FAILED) {
                     liquidGasClient.runAlgorithm(product);
                 }
-                System.out.println("Liquid and Gas Systems => State: " + algorithmState);
-            }catch (InterruptedException e){
+                logger.info("Liquid and Gas Systems => State: " + algorithmState);
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        System.out.println("---------------------------------------------------------");
+        logger.info("---------------------------------------------------------");
         return liquidGasClient.getResult().getBody();
     }
 
-    private int runManagementSystems(Product product){
+    private int runManagementSystems(Product product) {
         State algorithmState = null;
         managementSystemsClient.runAlgorithm(product);
         System.out.println("Starting Management Systems");
 
-        while(algorithmState != State.SUCCEEDED){
+        while (algorithmState != State.SUCCEEDED) {
             try {
                 Thread.sleep(500);
                 System.out.println("---------------------------------------------------------");
@@ -192,7 +195,7 @@ public class AnalysisController {
                     managementSystemsClient.runAlgorithm(product);
                 }
                 System.out.println("Management Systems => State: " + algorithmState);
-            }catch (InterruptedException e){
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
@@ -200,7 +203,7 @@ public class AnalysisController {
         return managementSystemsClient.getResult().getBody();
     }
 
-    private CircuitBreakerRegistry initCircuitBreakerRegistry(){
+    private CircuitBreakerRegistry initCircuitBreakerRegistry() {
         CircuitBreakerConfig config = CircuitBreakerConfig.custom()
                 .slidingWindowType(CircuitBreakerConfig.SlidingWindowType.COUNT_BASED)
                 .permittedNumberOfCallsInHalfOpenState(3)
@@ -211,7 +214,7 @@ public class AnalysisController {
         return CircuitBreakerRegistry.of(config);
     }
 
-    private RetryRegistry initRetryRegistry(){
+    private RetryRegistry initRetryRegistry() {
         RetryConfig config = RetryConfig.custom()
                 .waitDuration(Duration.ofSeconds(10))
                 .maxAttempts(5)
@@ -219,6 +222,7 @@ public class AnalysisController {
         return RetryRegistry.of(config);
     }
 
+    @Deprecated
     private Product getDummyProduct() {
         Product product = new Product();
         product.setStartingSystem("testStartingSystem");

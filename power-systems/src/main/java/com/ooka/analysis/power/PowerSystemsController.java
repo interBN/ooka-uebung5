@@ -2,6 +2,8 @@ package com.ooka.analysis.power;
 
 import com.ooka.analysis.State;
 import com.ooka.analysis.product.Product;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -15,10 +17,14 @@ import java.util.Optional;
 @RequestMapping("/powerSystems")
 public class PowerSystemsController {
 
+    Logger logger = LoggerFactory.getLogger(PowerSystemsController.class);
+
     @Autowired
     PowerSystemsRepository powerSystemsRepository;
 
     private State state = State.IDLE;
+    @Value("${spring.application.name}")
+    private String appName;
 
     @PutMapping("")
     public void runAlgorithm(@RequestBody Product product) {
@@ -26,7 +32,7 @@ public class PowerSystemsController {
     }
 
     private void run(Product product) {
-        System.out.println("Starting Power Systems Analysis");
+        logger.info("Starting Power Systems Analysis");
         if (state != State.RUNNING) {
             state = State.RUNNING;
             int analysisTime = 5000;
@@ -45,7 +51,7 @@ public class PowerSystemsController {
             }
             powerSystemsRepository.save(alg);
         }
-        System.out.println("Finished Power Systems Analysis");
+        logger.info("Finished Power Systems Analysis");
     }
 
     @GetMapping(value = "result", produces = "application/json")
@@ -82,7 +88,4 @@ public class PowerSystemsController {
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Log with " + powerSystemsId + " not found");
     }
-
-    @Value("${spring.application.name}")
-    private String appName;
 }
