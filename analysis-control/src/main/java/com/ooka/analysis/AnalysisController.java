@@ -30,10 +30,8 @@ import java.util.function.Function;
 public class AnalysisController {
 
     Logger logger = LoggerFactory.getLogger(AnalysisController.class);
-
     private State state = State.IDLE;
     private Integer result = null;
-
     private CircuitBreakerRegistry circuitBreakerRegistry = null;
     private RetryRegistry retryRegistry = null;
 
@@ -95,7 +93,7 @@ public class AnalysisController {
             CircuitBreaker circuitBreakerB = circuitBreakerRegistry.circuitBreaker("liquidGasSystems");
             Retry retryB = retryRegistry.retry("liquidGasSystems");
             Function<Product, Integer> decoratedB = Retry.decorateFunction(retryB,
-                    CircuitBreaker.decorateFunction(circuitBreakerB, this::runPowerSystems));
+                    CircuitBreaker.decorateFunction(circuitBreakerB, this::runLiquidGasSystems));
 
             int resultB;
             try {
@@ -108,7 +106,7 @@ public class AnalysisController {
             CircuitBreaker circuitBreakerC = circuitBreakerRegistry.circuitBreaker("managementSystems");
             Retry retryC = retryRegistry.retry("managementSystems");
             Function<Product, Integer> decoratedC = Retry.decorateFunction(retryC,
-                    CircuitBreaker.decorateFunction(circuitBreakerC, this::runPowerSystems));
+                    CircuitBreaker.decorateFunction(circuitBreakerC, this::runManagementSystems));
 
             int resultC;
             try {
