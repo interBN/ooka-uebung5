@@ -25,6 +25,8 @@ public class ManagementController {
     @Value("${spring.application.name}")
     private String appName;
 
+    private int lastResult = 0;
+
     @PutMapping("")
     public void runAlgorithm(@RequestBody Product product) {
         new Thread(() -> run(product)).start();
@@ -42,6 +44,7 @@ public class ManagementController {
                 if (Math.random() < 0.2) {
                     throw new Exception();
                 }
+                lastResult = product.hashCode() ;
                 state = State.SUCCEEDED;
                 alg.setLog("Analysis of " + product.getStartingSystem() + "Succeeded. Analysis time: " + analysisTime + "ms");
             } catch (Exception e) {
@@ -61,7 +64,7 @@ public class ManagementController {
         } else {
             status = HttpStatus.NO_CONTENT;
         }
-        return new ResponseEntity<>(15635, status);
+        return new ResponseEntity<>(lastResult, status);
     }
 
     @GetMapping("/{managementId}")
