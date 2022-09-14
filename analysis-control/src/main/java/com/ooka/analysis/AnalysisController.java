@@ -182,22 +182,22 @@ public class AnalysisController {
     private int runManagementSystems(Product product) {
         State algorithmState = null;
         managementSystemsClient.runAlgorithm(product);
-        System.out.println("Starting Management Systems");
+        logger.info("Starting Management Systems");
 
         while (algorithmState != State.SUCCEEDED) {
             try {
                 Thread.sleep(500);
-                System.out.println("---------------------------------------------------------");
+                logger.info("---------------------------------------------------------");
                 algorithmState = managementSystemsClient.getState().getBody();
                 if (algorithmState == State.FAILED) {
                     managementSystemsClient.runAlgorithm(product);
                 }
-                System.out.println("Management Systems => State: " + algorithmState);
+                logger.info("Management Systems => State: " + algorithmState);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        System.out.println("---------------------------------------------------------");
+        logger.info("---------------------------------------------------------");
         return managementSystemsClient.getResult().getBody();
     }
 
