@@ -18,6 +18,7 @@ import java.util.Scanner;
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = {"com.ooka.*"})
 @EntityScan("com.ooka.*")
+@Deprecated
 public class Cli {
 
     private static final String baseUrlAnalysisControl = "http://localhost:8072/analysiscontrol";
