@@ -36,7 +36,6 @@ public class PowerSystemsController {
         if (state != State.RUNNING) {
             state = State.RUNNING;
             int analysisTime = 5000;
-//                    ThreadLocalRandom.current().nextInt(100, 10000);
             PowerSystemsEntity alg = new PowerSystemsEntity();
             try {
                 Thread.sleep(analysisTime);
