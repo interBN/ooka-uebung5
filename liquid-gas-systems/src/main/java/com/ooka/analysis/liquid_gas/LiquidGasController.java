@@ -45,7 +45,7 @@ public class LiquidGasController {
                 if (Math.random() < 0.1) {
                     throw new Exception();
                 }
-                lastResult = product.hashCode();
+                lastResult = Math.abs(product.hashCode() % 111);
                 state = State.SUCCEEDED;
                 alg.setLog("Analysis of " + product.getAuxiliaryPTO() + "Succeeded. Analysis time: " + analysisTime + "ms");
             } catch (Exception e) {

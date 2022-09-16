@@ -115,9 +115,8 @@ public class AnalysisController {
                 resultC = 0;
                 logger.warn("Management Systems failed");
             }
-            result = resultA + resultB + resultC;
+            result = Math.abs(resultA + resultB + resultC);
 
-            logger.info("---------------------------------------------------------");
             logger.info("Power Systems: " + resultA);
             logger.info("Liquid/Gas Systems: " + resultB);
             logger.info("Management Systems: " + resultC);

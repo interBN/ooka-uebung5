@@ -44,7 +44,7 @@ public class PowerSystemsController {
                 if (Math.random() < 0.2) {
                     throw new Exception();
                 }
-                lastResult = product.hashCode() ;
+                lastResult = Math.abs((product.hashCode() * 3) % 113);
                 state = State.SUCCEEDED;
                 alg.setLog("Analysis of " + product.getStartingSystem() + "Succeeded. Analysis time: " + analysisTime + "ms");
             } catch (Exception e) {
